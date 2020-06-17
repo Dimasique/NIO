@@ -1,8 +1,8 @@
-package test_gradle;
+package test_gradle.implementations;
 
 import test_gradle.interfaces.IDecoder;
 
-class Coder implements IDecoder<String> {
+public class Coder implements IDecoder<String> {
 
     @Override
     public byte[] encode(String message) {
@@ -13,4 +13,5 @@ class Coder implements IDecoder<String> {
     public String decode(byte[] bytes) {
         return new String(bytes);
     }
+
 }

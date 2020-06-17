@@ -1,12 +1,12 @@
 package test_gradle.implementations;
 
-import javafx.util.Pair;
+import test_gradle.factories.CallbackFactory;
+import test_gradle.factories.DecoderFactory;
 import test_gradle.interfaces.*;
 
 import java.io.IOException;
 import java.net.InetAddress;
 import java.net.InetSocketAddress;
-import java.nio.ByteBuffer;
 import java.nio.channels.SelectionKey;
 import java.nio.channels.Selector;
 import java.nio.channels.ServerSocketChannel;
@@ -18,37 +18,37 @@ import org.apache.logging.log4j.LogManager;
 public class Server<T> implements IServer<T> {
 
     private final static Logger log = LogManager.getLogger(test_gradle.implementations.Server.class);
-    private IDecoder<T> decoder;
-    private Selector selector = null;
-    private final ByteBuffer buffer = ByteBuffer.allocate(1024);
-    private Map<String, SocketChannel> map;
+    private Selector selector;
     private ServerSocketChannel mySocket;
-    private Queue<Pair<SocketChannel, T>> queue = new ArrayDeque<>(2);
+    private boolean running;
     private CallbackServer<T> callback;
+    private CallbackFactory<T> callbackFactory;
+    private DecoderFactory<T> decoderFactory;
 
-    public Server(IDecoder<T> decoder, String IP, int port, CallbackServer<T> callback) {
-        this.decoder = decoder;
-        this.callback = callback;
-        try {
-            InetAddress hostIP = InetAddress.getByName(IP);
+    public Server(String IP, int port, DecoderFactory<T> decoderFactory,
+                  CallbackFactory<T> callbackFactory) throws IOException{
 
-            selector = Selector.open();
-            mySocket = ServerSocketChannel.open();
-            InetSocketAddress address = new InetSocketAddress(hostIP, port);
-            mySocket.socket().bind(address);
+        this.decoderFactory = decoderFactory;
+        this.callbackFactory = callbackFactory;
+        this.callback = callbackFactory.getCallback();
 
-            mySocket.configureBlocking(false);
-            mySocket.register(selector, SelectionKey.OP_ACCEPT);
+        InetAddress hostIP = InetAddress.getByName(IP);
 
-            map = new HashMap<>();
-        }
-        catch (IOException e) {
-            log.error(e.getMessage());
-        }
+        selector = Selector.open();
+        mySocket = ServerSocketChannel.open();
+        InetSocketAddress address = new InetSocketAddress(hostIP, port);
+        mySocket.socket().bind(address);
 
+        mySocket.configureBlocking(false);
+        mySocket.register(selector, SelectionKey.OP_ACCEPT);
+    }
+
+    @Override
+    public void start() {
         new Thread(() -> {
             try {
-                while (true) {
+                running = true;
+                while (running) {
 
                     selector.select();
                     Set<SelectionKey> selectedKeys = selector.selectedKeys();
@@ -59,49 +59,44 @@ public class Server<T> implements IServer<T> {
 
                         if (key.isAcceptable()) {
                             processAcceptEvent(mySocket, key);
-                        } else if (key.isReadable()) {
-                            SocketChannel client = (SocketChannel)key.channel();
-                            buffer.clear();
-                            client.read(buffer);
-                            T data = decoder.decode(Arrays.copyOf(buffer.array(), buffer.position()));
-                            if (data != null && !data.toString().trim().isEmpty()) {
-                                log.info("got message from client: " + data.toString());
-                                T response = callback.callingback(data);
-
-                                queue.add(new Pair<>(client, response));
-                                SelectionKey keyTemp = client.keyFor(selector);
-                                keyTemp.interestOps(SelectionKey.OP_WRITE);
-
-                            }
-                            else {
-                                client.close();
-                            }
-
-                        } else if(key.isWritable()) {
-                            Pair<SocketChannel, T> top = queue.poll();
-                            if (top != null) {
-                                SocketChannel socketChannel = top.getKey();
-                                T message = top.getValue();
-                                socketChannel.write(ByteBuffer.wrap(decoder.encode(message)));
-                            }
-                            key.interestOps(SelectionKey.OP_READ);
                         }
                         i.remove();
                     }
                 }
             }
             catch (IOException e) {
-                log.error(e.getMessage());
+                callback.onException(e);
             }
         }).start();
     }
 
-    private void processAcceptEvent(ServerSocketChannel mySocket, SelectionKey key)
-            throws IOException{
-        SocketChannel myClient = mySocket.accept();
-        myClient.configureBlocking(false);
-        myClient.register(selector, SelectionKey.OP_READ);
-        ByteBuffer myBuffer = ByteBuffer.allocate(1024);
+    @Override
+    public void close() throws IOException{
+        running = false;
+        selector.close();
+        mySocket.close();
     }
 
+    private void processAcceptEvent(ServerSocketChannel mySocket, SelectionKey key)
+            throws IOException{
+
+        SocketChannel newChannel = mySocket.accept();
+
+        ClientServerSide<T> newClient =
+                new ClientServerSide<>(decoderFactory.getDecoder(), callbackFactory.getCallback());
+
+        newClient.setChannel(newChannel);
+        newClient.registration();
+
+        newClient.start();
+        callback.onNewClient(newClient);
+    }
+
+    public void setCallbackFactory(CallbackFactory<T> callbackFactory) {
+        this.callbackFactory = callbackFactory;
+    }
+
+    public void setDecoderFactory(DecoderFactory<T> decoderFactory) {
+        this.decoderFactory = decoderFactory;
+    }
 }

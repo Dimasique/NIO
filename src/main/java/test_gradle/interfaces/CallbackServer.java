@@ -2,6 +2,11 @@ package test_gradle.interfaces;
 
 public interface CallbackServer<T> {
 
-    T callingback(T message);
+    void onMessageReceive(T message, IClient<T> client);
 
+    void onNewClient(IClient<T> client);
+
+    void onQuitClient(IClient<T> client);
+
+    void onException(Exception e);
 }

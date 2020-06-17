@@ -3,41 +3,102 @@
  */
 package test_gradle;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.junit.Test;
+import test_gradle.factories.CallbackFactory;
+import test_gradle.factories.DecoderFactory;
 import test_gradle.implementations.Client;
+import test_gradle.implementations.Coder;
 import test_gradle.implementations.Server;
 import test_gradle.interfaces.CallbackClient;
 import test_gradle.interfaces.CallbackServer;
+import test_gradle.interfaces.IClient;
+import test_gradle.interfaces.IDecoder;
+
+import java.io.IOException;
 
 
 public class AppTest {
 
     private static final String IP = "localhost";
     private static final int PORT = 9999;
+    private final static Logger log = LogManager.getLogger(test_gradle.AppTest.class);
 
     @Test
-    public void testCLientServer() throws InterruptedException{
+    public void testCLientServer() throws InterruptedException, IOException {
 
-        new Thread(() ->
-                    new Server<>(new Coder(), IP, PORT, new CallbackServer<>() {
+        try {
 
-                    @Override
-                    public String callingback(String message) {
-                        return message + " echo from Server";
-                    }
-                })).start();
+            DecoderFactory<String> decoderFactory = new DecoderFactory<>() {
+
+                @Override
+                public IDecoder<String> getDecoder() {
+                    return new Coder();
+                }
+            };
+
+            CallbackFactory<String> callbackFactory = new CallbackFactory<String>() {
+                @Override
+                public CallbackServer<String> getCallback() {
+                    return new CallbackServer<>() {
+
+                        @Override
+                        public void onMessageReceive(String message, IClient<String> client) {
+                            //эхо
+                            client.send(message + " from server");
+                        }
+
+                        @Override
+                        public void onNewClient(IClient<String> client) {
+                            log.info("New client connected");
+
+                        }
+
+                        @Override
+                        public void onQuitClient(IClient<String> client) {
+                            log.info("Client disconnected");
+                        }
+
+                        @Override
+                        public void onException(Exception e) {
+                            log.error(e);
+                        }
+                    };
+                }
+            };
+
+            Server<String> server = new Server<>(IP, PORT, decoderFactory, callbackFactory);
+            server.start();
+        }
+        catch (IOException e) {
+            e.printStackTrace();
+        }
 
 
         Client<String> client = new Client<>(new Coder(), new CallbackClient<>() {
             @Override
-            public void callingback(String message) {
+            public void onMessageReceive(String message) {
                 System.out.println("got message: " + message);
             }
+
+            @Override
+            public void onException(Exception e) {
+                log.error(e);
+            }
+
+            @Override
+            public void onDisconnect() {
+
+            }
         });
-        client.connect("localhost", PORT);
+
+        client.connect(IP, PORT);
+        client.registration();
+        client.start();
 
         String[] messages = {"Hello", "How are you?", "Good bye!"};
-        for(String message : messages) {
+        for (String message : messages) {
             client.send(message);
             Thread.sleep(75);
         }
