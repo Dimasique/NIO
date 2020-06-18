@@ -1,5 +1,6 @@
 package test_gradle.implementations;
 
+import javafx.util.Pair;
 import test_gradle.AbstractClient;
 import test_gradle.interfaces.CallbackClient;
 import test_gradle.interfaces.IDecoder;
@@ -51,22 +52,33 @@ public class Client<T> extends AbstractClient<T> {
                             client.finishConnect();
 
                         } else if (key.isReadable()) {
-                            buffer.clear();
+
+                            if (!readingPreviousMessage)
+                                buffer.clear();
                             int receiveData = client.read(buffer);
                             if (receiveData == 0 || receiveData == -1) {
                                 connected = false;
                                 callback.onDisconnect();
                                 break;
                             }
-                            
-                            T data = decoder.decode(Arrays.copyOf(buffer.array(), buffer.position()));
-                            callback.onMessageReceive(data);
+
+                            int indexBegin = 0;
+                            Pair<T, Integer> decoded = decoder.decode(buffer, indexBegin, buffer.position());
+                            while(decoded != null && indexBegin < buffer.capacity()) {
+                                callback.onMessageReceive(decoded.getKey());
+                                indexBegin = decoded.getValue() + 1;
+                                decoded = decoder.decode(buffer, indexBegin, buffer.position());
+                            }
+
+                            readingPreviousMessage = indexBegin < buffer.capacity();
+                            shiftBuffer(indexBegin);
+
                             key.interestOps(SelectionKey.OP_WRITE);
 
                         } else if (key.isWritable()) {
                             T line = queue.poll();
                             if (line != null) {
-                                client.write(ByteBuffer.wrap(decoder.encode(line)));
+                                client.write(decoder.encode(line));
                             }
                             key.interestOps(SelectionKey.OP_READ);
                         }
@@ -83,4 +95,5 @@ public class Client<T> extends AbstractClient<T> {
     public void setCallback(CallbackClient<T> callback) {
         this.callback = callback;
     }
+
 }

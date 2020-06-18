@@ -18,6 +18,7 @@ public abstract class AbstractClient<T> implements IClient<T> {
     protected Selector selector;
     protected final ByteBuffer buffer = ByteBuffer.allocate(1024);
     protected final BlockingQueue<T> queue = new ArrayBlockingQueue<>(2);
+    protected boolean readingPreviousMessage;
 
     protected boolean connected;
     protected InetSocketAddress myAddress;
@@ -40,5 +41,14 @@ public abstract class AbstractClient<T> implements IClient<T> {
         SelectionKey key = client.keyFor(selector);
         key.interestOps(SelectionKey.OP_WRITE);
         selector.wakeup();
+    }
+
+    protected void shiftBuffer(int end) {
+        int index = 0;
+        for(int i = end; i < buffer.position(); i++) {
+            buffer.put(index++, buffer.get(i));
+            buffer.put(i, (byte)0);
+        }
+        buffer.position(index);
     }
 }

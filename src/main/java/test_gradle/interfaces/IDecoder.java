@@ -1,8 +1,12 @@
 package test_gradle.interfaces;
 
+import javafx.util.Pair;
+
+import java.nio.ByteBuffer;
+
 public interface IDecoder<T> {
 
-    byte[] encode(T message);
+   ByteBuffer encode(T message);
 
-    T decode(byte[] bytes);
+    Pair<T, Integer> decode(ByteBuffer bytes, int begin, int end);
 }
