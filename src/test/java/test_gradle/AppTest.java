@@ -52,7 +52,7 @@ public class AppTest {
                         @Override
                         public void onNewClient(IClient<String> client) {
                             log.info("New client connected");
-
+                            client.send("Welcome!");
                         }
 
                         @Override
@@ -88,19 +88,17 @@ public class AppTest {
             }
 
             @Override
-            public void onDisconnect() {
-
-            }
+            public void onDisconnect() {}
         });
 
         client.connect(IP, PORT);
         client.registration();
         client.start();
 
-        String[] messages = {"Hello", "How are you?", "Good bye!"};
+        /*String[] messages = {"Hello", "How are you?", "Good bye!"};
         for (String message : messages) {
             client.send(message);
             Thread.sleep(75);
-        }
+        }*/
     }
 }

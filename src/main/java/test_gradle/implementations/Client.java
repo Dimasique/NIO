@@ -58,6 +58,7 @@ public class Client<T> extends AbstractClient<T> {
                                 callback.onDisconnect();
                                 break;
                             }
+                            
                             T data = decoder.decode(Arrays.copyOf(buffer.array(), buffer.position()));
                             callback.onMessageReceive(data);
                             key.interestOps(SelectionKey.OP_WRITE);
