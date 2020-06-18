@@ -19,8 +19,6 @@ public class Coder implements IDecoder<String> {
     public Pair<String, Integer> decode(ByteBuffer bytes, int begin, int end) {
         if (begin > end)
             return null;
-        String result = new String(Arrays.copyOfRange(bytes.array(), begin, end + 1), StandardCharsets.UTF_8 );
-
-        return new Pair<>(new String(result), end);
+        return new Pair<>(new String(Arrays.copyOfRange(bytes.array(), begin, end), StandardCharsets.UTF_8 ), end);
     }
 }

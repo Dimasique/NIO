@@ -19,6 +19,7 @@ public abstract class AbstractClient<T> implements IClient<T> {
     protected final ByteBuffer buffer = ByteBuffer.allocate(1024);
     protected final BlockingQueue<T> queue = new ArrayBlockingQueue<>(2);
     protected boolean readingPreviousMessage;
+    protected int indexBegin;
 
     protected boolean connected;
     protected InetSocketAddress myAddress;

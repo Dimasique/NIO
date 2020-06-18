@@ -95,10 +95,10 @@ public class AppTest {
         client.registration();
         client.start();
 
-        /*String[] messages = {"Hello", "How are you?", "Good bye!"};
+        String[] messages = {"aaaaaaaaaaaaaaaaa", "bbbbbbb", "cccc"};
         for (String message : messages) {
             client.send(message);
             Thread.sleep(75);
-        }*/
+        }
     }
 }

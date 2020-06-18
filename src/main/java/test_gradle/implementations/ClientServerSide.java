@@ -75,8 +75,10 @@ public class ClientServerSide<T> extends AbstractClient<T> {
                         if (key.isConnectable()) {
                             client.finishConnect();
                         } else if (key.isReadable()) {
-                            if (!readingPreviousMessage)
+                            if (!readingPreviousMessage) {
                                 buffer.clear();
+                                indexBegin = 0;
+                            }
 
                             int receiveData = client.read(buffer);
                             if (receiveData == 0 || receiveData == -1) {
@@ -85,7 +87,6 @@ public class ClientServerSide<T> extends AbstractClient<T> {
                                 break;
                             }
 
-                            int indexBegin = 0;
                             Pair<T, Integer> decoded = decoder.decode(buffer, indexBegin, buffer.position());
                             while(decoded != null && indexBegin < buffer.capacity()) {
                                 callback.onMessageReceive(decoded.getKey(), this);
@@ -93,7 +94,7 @@ public class ClientServerSide<T> extends AbstractClient<T> {
                                 decoded = decoder.decode(buffer, indexBegin, buffer.position());
                             }
 
-                            readingPreviousMessage = indexBegin < buffer.capacity();
+                            readingPreviousMessage = indexBegin < buffer.position();
                             shiftBuffer(indexBegin);
 
                             key.interestOps(SelectionKey.OP_WRITE);
