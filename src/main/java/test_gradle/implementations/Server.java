@@ -1,5 +1,6 @@
 package test_gradle.implementations;
 
+import test_gradle.ServerMessageHandler;
 import test_gradle.factories.CallbackFactory;
 import test_gradle.factories.DecoderFactory;
 import test_gradle.interfaces.*;
@@ -24,6 +25,7 @@ public class Server<T> implements IServer<T> {
     private CallbackServer<T> callback;
     private CallbackFactory<T> callbackFactory;
     private DecoderFactory<T> decoderFactory;
+    private ServerMessageHandler<T> serverMessageHandler;
 
     public Server(String IP, int port, DecoderFactory<T> decoderFactory,
                   CallbackFactory<T> callbackFactory) throws IOException{
@@ -45,6 +47,10 @@ public class Server<T> implements IServer<T> {
 
     @Override
     public void start() {
+        serverMessageHandler =
+                new ServerMessageHandler<>(decoderFactory.getDecoder(), callbackFactory.getCallback());
+        serverMessageHandler.start();
+
         new Thread(() -> {
             try {
                 running = true;
@@ -73,6 +79,7 @@ public class Server<T> implements IServer<T> {
     @Override
     public void close() throws IOException{
         running = false;
+        serverMessageHandler.close();
         selector.close();
         mySocket.close();
     }
@@ -86,9 +93,11 @@ public class Server<T> implements IServer<T> {
                 new ClientServerSide<>(decoderFactory.getDecoder(), callbackFactory.getCallback());
 
         newClient.setChannel(newChannel);
+        newClient.setSelector(serverMessageHandler.getSelector());
         newClient.registration();
+        serverMessageHandler.addClient(newChannel, newClient);
 
-        newClient.start();
+
         callback.onNewClient(newClient);
     }
 

@@ -27,25 +27,24 @@ public class ClientServerSide<T> extends AbstractClient<T> {
     private CallbackServer<T> callback;
 
     public ClientServerSide(IDecoder<T> decoder, CallbackServer<T> callback) {
-        try {
-            this.decoder = decoder;
-            this.selector = Selector.open();
-            this.callback = callback;
-        }
-        catch (IOException e){
-            callback.onException(e);
-        }
+        this.decoder = decoder;
+        this.callback = callback;
     }
 
-    public void setChannel(SocketChannel channel) {
-        this.client = channel;
+    public void setChannel(SocketChannel socketChannel) {
+        this.socketChannel = socketChannel;
+    }
+
+    public void setSelector(Selector selector) {
+        this.selector = selector;
     }
 
     @Override
     public void registration() {
         try {
-            this.client.configureBlocking(false);
-            this.client.register(selector, SelectionKey.OP_CONNECT | SelectionKey.OP_READ | SelectionKey.OP_WRITE);
+            this.socketChannel.configureBlocking(false);
+            this.socketChannel.register(selector,
+                    SelectionKey.OP_CONNECT | SelectionKey.OP_READ | SelectionKey.OP_WRITE);
         }
         catch (IOException e) {
             callback.onException(e);
@@ -54,68 +53,33 @@ public class ClientServerSide<T> extends AbstractClient<T> {
 
     @Override
     public void connect(String IP, int port) throws IOException {
-        throw new IOException("This client is already connected");
+        callback.onException(new IOException("This client is already connected"));
     }
 
     @Override
     public void start() {
+        callback.onException(new Exception("This client has already started"));
+    }
 
-        new Thread(() -> {
-            try {
-                connected = true;
-                while (connected) {
-                    selector.select();
-
-                    Set<SelectionKey> selectedKeys = selector.selectedKeys();
-                    Iterator<SelectionKey> i = selectedKeys.iterator();
-
-                    while (i.hasNext()) {
-                        SelectionKey key = i.next();
-
-                        if (key.isConnectable()) {
-                            client.finishConnect();
-                        } else if (key.isReadable()) {
-                            if (!readingPreviousMessage) {
-                                buffer.clear();
-                                indexBegin = 0;
-                            }
-
-                            int receiveData = client.read(buffer);
-                            if (receiveData == 0 || receiveData == -1) {
-                                connected = false;
-                                callback.onQuitClient(this);
-                                break;
-                            }
-
-                            Pair<T, Integer> decoded = decoder.decode(buffer, indexBegin, buffer.position());
-                            while(decoded != null && indexBegin < buffer.capacity()) {
-                                callback.onMessageReceive(decoded.getKey(), this);
-                                indexBegin = decoded.getValue() + 1;
-                                decoded = decoder.decode(buffer, indexBegin, buffer.position());
-                            }
-
-                            readingPreviousMessage = indexBegin < buffer.position();
-                            shiftBuffer(indexBegin);
-
-                            key.interestOps(SelectionKey.OP_WRITE);
-                        } else if (key.isWritable()) {
-                            T line = queue.poll();
-                            if (line != null) {
-                                client.write(decoder.encode(line));
-                            }
-                            key.interestOps(SelectionKey.OP_READ);
-                        }
-                        i.remove();
-                    }
-                }
-            }
-            catch (IOException e) {
-                callback.onException(e);
-            }
-        }).start();
+    @Override
+    public void close(){
+        try {
+            socketChannel.close();
+        }
+        catch (IOException e) {
+            callback.onException(e);
+        }
     }
 
     public void setCallback(CallbackServer<T> callback) {
         this.callback = callback;
+    }
+
+    public T poll() {
+        return queue.poll();
+    }
+
+    public boolean isReadingPreviousMessage() {
+        return readingPreviousMessage;
     }
 }

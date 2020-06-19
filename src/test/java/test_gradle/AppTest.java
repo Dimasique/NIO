@@ -45,7 +45,6 @@ public class AppTest {
 
                         @Override
                         public void onMessageReceive(String message, IClient<String> client) {
-                            //эхо
                             client.send(message + " from server");
                         }
 
@@ -100,5 +99,8 @@ public class AppTest {
             client.send(message);
             Thread.sleep(75);
         }
+        client.close();
+        Thread.sleep(3000);
+
     }
 }

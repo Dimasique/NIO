@@ -1,55 +1,56 @@
-package test_gradle.implementations;
+package test_gradle;
 
 import javafx.util.Pair;
-import test_gradle.AbstractClient;
-import test_gradle.interfaces.CallbackClient;
+import test_gradle.implementations.ClientServerSide;
+import test_gradle.interfaces.CallbackServer;
+import test_gradle.interfaces.IClient;
 import test_gradle.interfaces.IDecoder;
 
 import java.io.IOException;
-import java.net.InetAddress;
-import java.net.InetSocketAddress;
 import java.nio.ByteBuffer;
 import java.nio.channels.SelectionKey;
 import java.nio.channels.Selector;
 import java.nio.channels.SocketChannel;
-import java.util.*;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.Map;
+import java.util.Set;
 
-import org.apache.logging.log4j.Logger;
-import org.apache.logging.log4j.LogManager;
+public class ServerMessageHandler<T> {
+    private boolean running;
+    private IDecoder<T> decoder;
+    private Selector selector;
+    private CallbackServer<T> callback;
 
-public class Client<T> extends AbstractClient<T> {
+    private final Map<SocketChannel, IClient<T>> clients = new HashMap<>();
+    private final Map<SocketChannel, ByteBuffer> buffers = new HashMap<>();
 
-    private final static Logger log = LogManager.getLogger(test_gradle.implementations.Client.class);
-    private CallbackClient<T> callback;
-    private boolean connected;
-
-    public Client(IDecoder<T> decoder, CallbackClient<T> callback) throws IOException{
-        this.decoder = decoder;
-        this.selector = Selector.open();
-        this.callback = callback;
+    public ServerMessageHandler(IDecoder<T> decoder, CallbackServer<T> callback) {
+        try {
+            this.decoder = decoder;
+            this.callback = callback;
+            this.selector = Selector.open();
+        }
+        catch (IOException e){
+            callback.onException(e);
+        }
     }
 
-    @Override
-    public void connect(String IP, int port) throws IOException {
-        InetAddress hostIP = InetAddress.getByName(IP);
-        myAddress = new InetSocketAddress(hostIP, port);
+    public void addClient(SocketChannel socketChannel, IClient<T> client) {
+        clients.put(socketChannel, client);
+        buffers.put(socketChannel, ByteBuffer.allocate(1024));
     }
 
-    @Override
-    public void registration() throws IOException{
-        this.socketChannel = SocketChannel.open(myAddress);
-        this.socketChannel.configureBlocking(false);
-        this.socketChannel.register(selector,
-                SelectionKey.OP_CONNECT | SelectionKey.OP_READ | SelectionKey.OP_WRITE);
+    public Selector getSelector() {
+        return selector;
     }
 
-    @Override
     public void start() {
+        running = true;
 
         new Thread(() -> {
             try {
-                connected = true;
-                while (connected) {
+                while (running) {
                     selector.select();
 
                     Set<SelectionKey> selectedKeys = selector.selectedKeys();
@@ -57,38 +58,40 @@ public class Client<T> extends AbstractClient<T> {
 
                     while (i.hasNext()) {
                         SelectionKey key = i.next();
+                        SocketChannel socketChannel = (SocketChannel)key.channel();
+
+                        ByteBuffer buffer = buffers.get(socketChannel);
+                        IClient<T> client = clients.get(socketChannel);
 
                         if (key.isConnectable()) {
                             socketChannel.finishConnect();
-
                         } else if (key.isReadable()) {
 
-                            if (!readingPreviousMessage) {
+                            if (!((ClientServerSide<T>)client).isReadingPreviousMessage()) {
                                 buffer.clear();
                             }
 
                             int receiveData = socketChannel.read(buffer);
                             if (receiveData == 0 || receiveData == -1) {
-                                connected = false;
-                                callback.onDisconnect();
+                                client.close();
+                                callback.onQuitClient(client);
+                                clients.remove(socketChannel);
                                 break;
                             }
 
-                            indexBegin = 0;
+                            int indexBegin = 0;
                             Pair<T, Integer> decoded = decoder.decode(buffer, indexBegin, buffer.position());
                             while(decoded != null && indexBegin < buffer.capacity()) {
-                                callback.onMessageReceive(decoded.getKey());
+                                callback.onMessageReceive(decoded.getKey(), client);
                                 indexBegin = decoded.getValue() + 1;
                                 decoded = decoder.decode(buffer, indexBegin, buffer.position());
                             }
 
-                            readingPreviousMessage = indexBegin < buffer.position();
-                            shiftBuffer(indexBegin);
+                            shiftBuffer(buffer, indexBegin);
 
                             key.interestOps(SelectionKey.OP_WRITE);
-
                         } else if (key.isWritable()) {
-                            T line = queue.poll();
+                            T line = ((ClientServerSide<T>)client).poll();
                             if (line != null) {
                                 socketChannel.write(decoder.encode(line));
                             }
@@ -104,22 +107,19 @@ public class Client<T> extends AbstractClient<T> {
         }).start();
     }
 
-    public void setCallback(CallbackClient<T> callback) {
-        this.callback = callback;
-    }
-
-    @Override
-    public void close(){
+    public void close() {
+        running = false;
         try {
-            connected = false;
-            socketChannel.close();
+            for (SocketChannel channel : clients.keySet()) {
+                channel.close();
+            }
         }
         catch (IOException e) {
             callback.onException(e);
         }
     }
 
-    private void shiftBuffer(int end) {
+    private void shiftBuffer(ByteBuffer buffer, int end) {
         int index = 0;
         for(int i = end; i < buffer.position(); i++) {
             buffer.put(index++, buffer.get(i));
@@ -127,5 +127,4 @@ public class Client<T> extends AbstractClient<T> {
         }
         buffer.position(index);
     }
-
 }
