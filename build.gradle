@@ -22,12 +22,6 @@ repositories {
     jcenter()
 }
 
-dependencyManagement {
-    imports {
-        mavenBom 'org.apache.logging.log4j:log4j-bom:2.13.3'
-    }
-}
-
 dependencies {
     // This dependency is used by the application.
     implementation 'com.google.guava:guava:29.0-jre'

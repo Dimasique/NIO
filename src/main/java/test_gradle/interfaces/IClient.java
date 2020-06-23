@@ -6,11 +6,9 @@ public interface IClient<T> {
 
     void connect(String IP, int port) throws IOException;
 
-    void registration() throws IOException;
-
     void close() throws IOException;
 
-    void send(T message);
+    void send(T message) throws InterruptedException;
 
     void start();
 }

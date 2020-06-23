@@ -2,11 +2,18 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="da60f29b-42a7-4fa1-b33c-aba9be32a9b8" name="Default Changelist" comment="">
+      <change beforePath="$PROJECT_DIR$/.idea/gradle.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/gradle.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/misc.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/misc.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/build.gradle" beforeDir="false" afterPath="$PROJECT_DIR$/build.gradle" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/main/java/test_gradle/AbstractClient.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/test_gradle/AbstractClient.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/test_gradle/ServerMessageHandler.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/test_gradle/ServerMessageHandler.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/main/java/test_gradle/implementations/Client.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/test_gradle/implementations/Client.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/main/java/test_gradle/implementations/ClientServerSide.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/test_gradle/implementations/ClientServerSide.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/test_gradle/implementations/Coder.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/test_gradle/implementations/Coder.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/main/java/test_gradle/implementations/Server.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/test_gradle/implementations/Server.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/test_gradle/interfaces/IClient.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/test_gradle/interfaces/IClient.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/test_gradle/interfaces/IDecoder.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/test_gradle/interfaces/IDecoder.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/test/java/test_gradle/AppTest.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/test/java/test_gradle/AppTest.java" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
@@ -68,10 +75,10 @@
   <component name="ProjectLevelVcsManager" settingsEditedManually="true" />
   <component name="ProjectViewState">
     <option name="hideEmptyMiddlePackages" value="true" />
-    <option name="showExcludedFiles" value="true" />
     <option name="showLibraryContents" value="true" />
   </component>
   <component name="PropertiesComponent">
+    <property name="RunOnceActivity.OpenProjectViewOnStart" value="true" />
     <property name="RunOnceActivity.ShowReadmeOnStart" value="true" />
     <property name="SHARE_PROJECT_CONFIGURATION_FILES" value="true" />
     <property name="WebServerToolWindowFactoryState" value="false" />
@@ -80,49 +87,10 @@
     <property name="project.structure.last.edited" value="Modules" />
     <property name="project.structure.proportion" value="0.15" />
     <property name="project.structure.side.proportion" value="0.2" />
-    <property name="settings.editor.selected.configurable" value="editor.preferences.fonts.default" />
+    <property name="settings.editor.selected.configurable" value="reference.settingsdialog.project.gradle" />
     <property name="show.unlinked.gradle.project.popup" value="true" />
   </component>
-  <component name="RunManager" selected="Gradle.AppTest">
-    <configuration name="TestClient" type="Application" factoryName="Application" temporary="true" nameIsGenerated="true">
-      <option name="MAIN_CLASS_NAME" value="test_gradle.TestClient" />
-      <module name="test_gradle.main" />
-      <extension name="coverage">
-        <pattern>
-          <option name="PATTERN" value="test_gradle.implementations.*" />
-          <option name="ENABLED" value="true" />
-        </pattern>
-      </extension>
-      <method v="2">
-        <option name="Make" enabled="true" />
-      </method>
-    </configuration>
-    <configuration name="TestServer" type="Application" factoryName="Application" temporary="true" nameIsGenerated="true">
-      <option name="MAIN_CLASS_NAME" value="test_gradle.TestServer" />
-      <module name="test_gradle.main" />
-      <extension name="coverage">
-        <pattern>
-          <option name="PATTERN" value="test_gradle.implementations.*" />
-          <option name="ENABLED" value="true" />
-        </pattern>
-      </extension>
-      <method v="2">
-        <option name="Make" enabled="true" />
-      </method>
-    </configuration>
-    <configuration name="Wut" type="Application" factoryName="Application" temporary="true" nameIsGenerated="true">
-      <option name="MAIN_CLASS_NAME" value="test_gradle.Wut" />
-      <module name="test_gradle.main" />
-      <extension name="coverage">
-        <pattern>
-          <option name="PATTERN" value="test_gradle.implementations.*" />
-          <option name="ENABLED" value="true" />
-        </pattern>
-      </extension>
-      <method v="2">
-        <option name="Make" enabled="true" />
-      </method>
-    </configuration>
+  <component name="RunManager" selected="Gradle.AppTest.testSendingFromClient">
     <configuration name="AppTest" type="GradleRunConfiguration" factoryName="Gradle" temporary="true">
       <ExternalSystemSettings>
         <option name="executionName" />
@@ -143,12 +111,71 @@
       <GradleScriptDebugEnabled>false</GradleScriptDebugEnabled>
       <method v="2" />
     </configuration>
-    <configuration name="AppTest.testCLientServer" type="GradleRunConfiguration" factoryName="Gradle" temporary="true">
+    <configuration name="AppTest.testClientDisconnect" type="GradleRunConfiguration" factoryName="Gradle" temporary="true">
       <ExternalSystemSettings>
         <option name="executionName" />
         <option name="externalProjectPath" value="$PROJECT_DIR$" />
         <option name="externalSystemIdString" value="GRADLE" />
-        <option name="scriptParameters" value="--tests &quot;test_gradle.AppTest.testCLientServer&quot;" />
+        <option name="scriptParameters" value="--tests &quot;test_gradle.AppTest.testClientDisconnect&quot;" />
+        <option name="taskDescriptions">
+          <list />
+        </option>
+        <option name="taskNames">
+          <list>
+            <option value=":cleanTest" />
+            <option value=":test" />
+          </list>
+        </option>
+        <option name="vmOptions" />
+      </ExternalSystemSettings>
+      <GradleScriptDebugEnabled>false</GradleScriptDebugEnabled>
+      <method v="2" />
+    </configuration>
+    <configuration name="AppTest.testMessageFromServer" type="GradleRunConfiguration" factoryName="Gradle" temporary="true">
+      <ExternalSystemSettings>
+        <option name="executionName" />
+        <option name="externalProjectPath" value="$PROJECT_DIR$" />
+        <option name="externalSystemIdString" value="GRADLE" />
+        <option name="scriptParameters" value="--tests &quot;test_gradle.AppTest.testMessageFromServer&quot;" />
+        <option name="taskDescriptions">
+          <list />
+        </option>
+        <option name="taskNames">
+          <list>
+            <option value=":test" />
+          </list>
+        </option>
+        <option name="vmOptions" />
+      </ExternalSystemSettings>
+      <GradleScriptDebugEnabled>false</GradleScriptDebugEnabled>
+      <method v="2" />
+    </configuration>
+    <configuration name="AppTest.testSendingFromClient" type="GradleRunConfiguration" factoryName="Gradle" temporary="true">
+      <ExternalSystemSettings>
+        <option name="executionName" />
+        <option name="externalProjectPath" value="$PROJECT_DIR$" />
+        <option name="externalSystemIdString" value="GRADLE" />
+        <option name="scriptParameters" value="--tests &quot;test_gradle.AppTest.testSendingFromClient&quot;" />
+        <option name="taskDescriptions">
+          <list />
+        </option>
+        <option name="taskNames">
+          <list>
+            <option value=":cleanTest" />
+            <option value=":test" />
+          </list>
+        </option>
+        <option name="vmOptions" />
+      </ExternalSystemSettings>
+      <GradleScriptDebugEnabled>false</GradleScriptDebugEnabled>
+      <method v="2" />
+    </configuration>
+    <configuration name="AppTest.testSendingMessages" type="GradleRunConfiguration" factoryName="Gradle" temporary="true">
+      <ExternalSystemSettings>
+        <option name="executionName" />
+        <option name="externalProjectPath" value="$PROJECT_DIR$" />
+        <option name="externalSystemIdString" value="GRADLE" />
+        <option name="scriptParameters" value="--tests &quot;test_gradle.AppTest.testSendingMessages&quot;" />
         <option name="taskDescriptions">
           <list />
         </option>
@@ -165,11 +192,11 @@
     </configuration>
     <recent_temporary>
       <list>
+        <item itemvalue="Gradle.AppTest.testSendingFromClient" />
+        <item itemvalue="Gradle.AppTest.testMessageFromServer" />
+        <item itemvalue="Gradle.AppTest.testClientDisconnect" />
+        <item itemvalue="Gradle.AppTest.testSendingMessages" />
         <item itemvalue="Gradle.AppTest" />
-        <item itemvalue="Gradle.AppTest.testCLientServer" />
-        <item itemvalue="Application.TestClient" />
-        <item itemvalue="Application.Wut" />
-        <item itemvalue="Application.TestServer" />
       </list>
     </recent_temporary>
   </component>
@@ -194,7 +221,7 @@
       <workItem from="1592295338860" duration="6122000" />
       <workItem from="1592375353524" duration="16545000" />
       <workItem from="1592460265319" duration="13906000" />
-      <workItem from="1592546562364" duration="2768000" />
+      <workItem from="1592546562364" duration="12963000" />
     </task>
     <servers />
   </component>
@@ -230,22 +257,22 @@
       <screen x="0" y="0" width="1536" height="824" />
     </state>
     <state x="549" y="167" key="FileChooserDialogImpl/0.0.1536.824@0.0.1536.824" timestamp="1591894436220" />
-    <state width="1493" height="226" key="GridCell.Tab.0.bottom" timestamp="1592549379255">
+    <state width="1493" height="210" key="GridCell.Tab.0.bottom" timestamp="1592848344352">
       <screen x="0" y="0" width="1536" height="824" />
     </state>
-    <state width="1493" height="226" key="GridCell.Tab.0.bottom/0.0.1536.824@0.0.1536.824" timestamp="1592549379255" />
-    <state width="1493" height="226" key="GridCell.Tab.0.center" timestamp="1592549379254">
+    <state width="1493" height="210" key="GridCell.Tab.0.bottom/0.0.1536.824@0.0.1536.824" timestamp="1592848344352" />
+    <state width="1493" height="210" key="GridCell.Tab.0.center" timestamp="1592848344351">
       <screen x="0" y="0" width="1536" height="824" />
     </state>
-    <state width="1493" height="226" key="GridCell.Tab.0.center/0.0.1536.824@0.0.1536.824" timestamp="1592549379254" />
-    <state width="1493" height="226" key="GridCell.Tab.0.left" timestamp="1592549379254">
+    <state width="1493" height="210" key="GridCell.Tab.0.center/0.0.1536.824@0.0.1536.824" timestamp="1592848344351" />
+    <state width="1493" height="210" key="GridCell.Tab.0.left" timestamp="1592848344351">
       <screen x="0" y="0" width="1536" height="824" />
     </state>
-    <state width="1493" height="226" key="GridCell.Tab.0.left/0.0.1536.824@0.0.1536.824" timestamp="1592549379254" />
-    <state width="1493" height="226" key="GridCell.Tab.0.right" timestamp="1592549379255">
+    <state width="1493" height="210" key="GridCell.Tab.0.left/0.0.1536.824@0.0.1536.824" timestamp="1592848344351" />
+    <state width="1493" height="210" key="GridCell.Tab.0.right" timestamp="1592848344352">
       <screen x="0" y="0" width="1536" height="824" />
     </state>
-    <state width="1493" height="226" key="GridCell.Tab.0.right/0.0.1536.824@0.0.1536.824" timestamp="1592549379255" />
+    <state width="1493" height="210" key="GridCell.Tab.0.right/0.0.1536.824@0.0.1536.824" timestamp="1592848344352" />
     <state width="1493" height="261" key="GridCell.Tab.1.bottom" timestamp="1591785077863">
       <screen x="0" y="0" width="1536" height="824" />
     </state>
@@ -262,13 +289,17 @@
       <screen x="0" y="0" width="1536" height="824" />
     </state>
     <state width="1493" height="261" key="GridCell.Tab.1.right/0.0.1536.824@0.0.1536.824" timestamp="1591785077863" />
-    <state x="277" y="55" key="SettingsEditor" timestamp="1592386458820">
+    <state x="235" y="0" key="SettingsEditor" timestamp="1592816712877">
       <screen x="0" y="0" width="1536" height="824" />
     </state>
-    <state x="277" y="55" key="SettingsEditor/0.0.1536.824@0.0.1536.824" timestamp="1592386458820" />
+    <state x="235" y="0" key="SettingsEditor/0.0.1536.824@0.0.1536.824" timestamp="1592816712877" />
     <state x="465" y="236" key="com.intellij.ide.util.TipDialog" timestamp="1592546563077">
       <screen x="0" y="0" width="1536" height="824" />
     </state>
     <state x="465" y="236" key="com.intellij.ide.util.TipDialog/0.0.1536.824@0.0.1536.824" timestamp="1592546563077" />
+    <state x="209" y="33" key="new project wizard" timestamp="1592807569784">
+      <screen x="0" y="0" width="1536" height="824" />
+    </state>
+    <state x="209" y="33" key="new project wizard/0.0.1536.824@0.0.1536.824" timestamp="1592807569784" />
   </component>
 </project>

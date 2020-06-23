@@ -1,6 +1,6 @@
 package test_gradle.implementations;
 
-import javafx.util.Pair;
+import test_gradle.Pair;
 import test_gradle.interfaces.IDecoder;
 
 import java.nio.ByteBuffer;

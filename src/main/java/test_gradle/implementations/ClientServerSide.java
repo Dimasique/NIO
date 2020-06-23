@@ -1,6 +1,5 @@
 package test_gradle.implementations;
 
-import javafx.util.Pair;
 import test_gradle.AbstractClient;
 import test_gradle.interfaces.CallbackClient;
 import test_gradle.interfaces.CallbackServer;
@@ -40,7 +39,12 @@ public class ClientServerSide<T> extends AbstractClient<T> {
     }
 
     @Override
-    public void registration() {
+    public void connect(String IP, int port) throws IOException {
+        callback.onException(new IOException("This client is already connected"));
+    }
+
+    @Override
+    public void start() {
         try {
             this.socketChannel.configureBlocking(false);
             this.socketChannel.register(selector,
@@ -49,16 +53,6 @@ public class ClientServerSide<T> extends AbstractClient<T> {
         catch (IOException e) {
             callback.onException(e);
         }
-    }
-
-    @Override
-    public void connect(String IP, int port) throws IOException {
-        callback.onException(new IOException("This client is already connected"));
-    }
-
-    @Override
-    public void start() {
-        callback.onException(new Exception("This client has already started"));
     }
 
     @Override

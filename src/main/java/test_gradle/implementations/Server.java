@@ -19,10 +19,10 @@ import org.apache.logging.log4j.LogManager;
 public class Server<T> implements IServer<T> {
 
     private final static Logger log = LogManager.getLogger(test_gradle.implementations.Server.class);
-    private Selector selector;
-    private ServerSocketChannel mySocket;
+    private final Selector selector;
+    private final ServerSocketChannel mySocket;
     private boolean running;
-    private CallbackServer<T> callback;
+    private final CallbackServer<T> callback;
     private CallbackFactory<T> callbackFactory;
     private DecoderFactory<T> decoderFactory;
     private ServerMessageHandler<T> serverMessageHandler;
@@ -94,7 +94,7 @@ public class Server<T> implements IServer<T> {
 
         newClient.setChannel(newChannel);
         newClient.setSelector(serverMessageHandler.getSelector());
-        newClient.registration();
+        newClient.start();
         serverMessageHandler.addClient(newChannel, newClient);
 
 

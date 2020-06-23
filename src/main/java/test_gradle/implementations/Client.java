@@ -1,7 +1,7 @@
 package test_gradle.implementations;
 
-import javafx.util.Pair;
 import test_gradle.AbstractClient;
+import test_gradle.Pair;
 import test_gradle.interfaces.CallbackClient;
 import test_gradle.interfaces.IDecoder;
 
@@ -35,16 +35,19 @@ public class Client<T> extends AbstractClient<T> {
         myAddress = new InetSocketAddress(hostIP, port);
     }
 
-    @Override
-    public void registration() throws IOException{
-        this.socketChannel = SocketChannel.open(myAddress);
-        this.socketChannel.configureBlocking(false);
-        this.socketChannel.register(selector,
-                SelectionKey.OP_CONNECT | SelectionKey.OP_READ | SelectionKey.OP_WRITE);
-    }
 
     @Override
     public void start() {
+
+        try {
+            this.socketChannel = SocketChannel.open(myAddress);
+            this.socketChannel.configureBlocking(false);
+            this.socketChannel.register(selector,
+                    SelectionKey.OP_CONNECT | SelectionKey.OP_READ | SelectionKey.OP_WRITE);
+
+        } catch (IOException e) {
+            callback.onException(e);
+        }
 
         new Thread(() -> {
             try {
@@ -57,7 +60,6 @@ public class Client<T> extends AbstractClient<T> {
 
                     while (i.hasNext()) {
                         SelectionKey key = i.next();
-
                         if (key.isConnectable()) {
                             socketChannel.finishConnect();
 
@@ -68,10 +70,12 @@ public class Client<T> extends AbstractClient<T> {
                             }
 
                             int receiveData = socketChannel.read(buffer);
+                            //System.out.println(receiveData);
                             if (receiveData == 0 || receiveData == -1) {
                                 connected = false;
                                 callback.onDisconnect();
-                                break;
+                                i.remove();
+                                continue;
                             }
 
                             indexBegin = 0;
@@ -85,14 +89,16 @@ public class Client<T> extends AbstractClient<T> {
                             readingPreviousMessage = indexBegin < buffer.position();
                             shiftBuffer(indexBegin);
 
-                            key.interestOps(SelectionKey.OP_WRITE);
+                            //key.interestOps(SelectionKey.OP_WRITE);
 
                         } else if (key.isWritable()) {
                             T line = queue.poll();
+
                             if (line != null) {
                                 socketChannel.write(decoder.encode(line));
+                                //System.out.println("sent!");
                             }
-                            key.interestOps(SelectionKey.OP_READ);
+                            //key.interestOps(SelectionKey.OP_READ);
                         }
                         i.remove();
                     }

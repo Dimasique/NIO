@@ -1,6 +1,5 @@
 package test_gradle;
 
-import javafx.util.Pair;
 import test_gradle.implementations.ClientServerSide;
 import test_gradle.interfaces.CallbackServer;
 import test_gradle.interfaces.IClient;
@@ -11,10 +10,10 @@ import java.nio.ByteBuffer;
 import java.nio.channels.SelectionKey;
 import java.nio.channels.Selector;
 import java.nio.channels.SocketChannel;
-import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
 import java.util.Set;
+import java.util.concurrent.ConcurrentHashMap;
 
 public class ServerMessageHandler<T> {
     private boolean running;
@@ -22,8 +21,8 @@ public class ServerMessageHandler<T> {
     private Selector selector;
     private CallbackServer<T> callback;
 
-    private final Map<SocketChannel, IClient<T>> clients = new HashMap<>();
-    private final Map<SocketChannel, ByteBuffer> buffers = new HashMap<>();
+    private final Map<SocketChannel, IClient<T>> clients = new ConcurrentHashMap<>();
+    private final Map<SocketChannel, ByteBuffer> buffers = new ConcurrentHashMap<>();
 
     public ServerMessageHandler(IDecoder<T> decoder, CallbackServer<T> callback) {
         try {
@@ -89,13 +88,14 @@ public class ServerMessageHandler<T> {
 
                             shiftBuffer(buffer, indexBegin);
 
-                            key.interestOps(SelectionKey.OP_WRITE);
+                            //key.interestOps(SelectionKey.OP_WRITE);
                         } else if (key.isWritable()) {
                             T line = ((ClientServerSide<T>)client).poll();
                             if (line != null) {
                                 socketChannel.write(decoder.encode(line));
+
                             }
-                            key.interestOps(SelectionKey.OP_READ);
+                            //key.interestOps(SelectionKey.OP_READ);
                         }
                         i.remove();
                     }

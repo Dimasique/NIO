@@ -17,17 +17,14 @@ public abstract class AbstractClient<T> implements IClient<T> {
     protected IDecoder<T> decoder;
     protected Selector selector;
     protected final ByteBuffer buffer = ByteBuffer.allocate(1024);
-    protected final BlockingQueue<T> queue = new ArrayBlockingQueue<>(2);
+    protected final BlockingQueue<T> queue = new ArrayBlockingQueue<>(3);
     protected boolean readingPreviousMessage;
     protected int indexBegin;
     protected InetSocketAddress myAddress;
 
     @Override
-    public void send(T message) {
-        queue.add(message);
-        SelectionKey key = socketChannel.keyFor(selector);
-
-        key.interestOps(SelectionKey.OP_WRITE);
+    public void send(T message) throws InterruptedException {
+        queue.put(message);
         selector.wakeup();
     }
 

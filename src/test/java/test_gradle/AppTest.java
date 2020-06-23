@@ -23,10 +23,176 @@ public class AppTest {
 
     private static final String IP = "localhost";
     private static final int PORT = 9999;
-    private final static Logger log = LogManager.getLogger(test_gradle.AppTest.class);
+
+    public static String messageFrom = "";
+    public static String messageGot = "";
 
     @Test
-    public void testCLientServer() throws InterruptedException, IOException {
+    public void testSendingFromClient() throws Exception {
+
+        messageFrom = "Hello!";
+
+        try {
+            DecoderFactory<String> decoderFactory = new DecoderFactory<>() {
+
+                @Override
+                public IDecoder<String> getDecoder() {
+                    return new Coder();
+                }
+            };
+            CallbackFactory<String> callbackFactory = new CallbackFactory<String>() {
+                @Override
+                public CallbackServer<String> getCallback() {
+                    return new CallbackServer<>() {
+
+                        @Override
+                        public void onMessageReceive(String message, IClient<String> client) {
+                            messageGot = message;
+                        }
+
+                        @Override
+                        public void onNewClient(IClient<String> client) {
+                            //client.send("Welcome!");
+                        }
+
+                        @Override
+                        public void onQuitClient(IClient<String> client) {
+                            assert false;
+                        }
+
+                        @Override
+                        public void onException(Exception e) {
+                            assert false;
+                        }
+                    };
+                }
+            };
+
+            Server<String> server = new Server<>(IP, PORT, decoderFactory, callbackFactory);
+            server.start();
+        }
+        catch (IOException e) {
+            e.printStackTrace();
+        }
+
+
+        Client<String> client = new Client<>(new Coder(), new CallbackClient<>() {
+            @Override
+            public void onMessageReceive(String message) {
+                assert false;
+            }
+
+            @Override
+            public void onException(Exception e) {
+                assert false;
+            }
+
+            @Override
+            public void onDisconnect() {
+                assert false;
+            }
+        });
+
+        client.connect(IP, PORT);
+        client.start();
+
+        Thread.sleep(750);
+        client.send(messageFrom);
+        Thread.sleep(3000);
+
+        assert messageFrom.equals(messageGot);
+    }
+
+    @Test
+    public void testSendingFromServer() throws Exception {
+        messageFrom = "Welcome!";
+        messageGot = "";
+
+        try {
+            DecoderFactory<String> decoderFactory = new DecoderFactory<>() {
+
+                @Override
+                public IDecoder<String> getDecoder() {
+                    return new Coder();
+                }
+            };
+            CallbackFactory<String> callbackFactory = new CallbackFactory<>() {
+                @Override
+                public CallbackServer<String> getCallback() {
+                    return new CallbackServer<>() {
+
+                        @Override
+                        public void onMessageReceive(String message, IClient<String> client) {
+                            try {
+                                client.send(message);
+                            } catch (InterruptedException e) {
+                                e.printStackTrace();
+                            }
+                        }
+
+                        @Override
+                        public void onNewClient(IClient<String> client) {
+                            try {
+                                client.send("Hello!");
+                                client.send("How are you?");
+                            } catch (InterruptedException e) {
+                                e.printStackTrace();
+                            }
+
+                        }
+
+                        @Override
+                        public void onQuitClient(IClient<String> client) {
+                            assert false;
+                        }
+
+                        @Override
+                        public void onException(Exception e) {
+                            assert false;
+                        }
+                    };
+                }
+            };
+
+            Server<String> server = new Server<>(IP, PORT, decoderFactory, callbackFactory);
+            server.start();
+        }
+        catch (IOException e) {
+            e.printStackTrace();
+        }
+
+
+        Client<String> client = new Client<>(new Coder(), new CallbackClient<>() {
+            @Override
+            public void onMessageReceive(String message) {
+                //messageGot = message;
+                System.out.println("got:" + message);
+            }
+
+            @Override
+            public void onException(Exception e) {
+                assert false;
+            }
+
+            @Override
+            public void onDisconnect() {
+                assert false;
+            }
+        });
+
+        client.connect(IP, PORT);
+        client.start();
+
+        String[] messages = {"aaaaaaaaaaaaaaaaa!", "bbbbbbb!", "cccc!"};
+        for (String message : messages) {
+            client.send(message);
+        }
+
+        Thread.sleep(75);
+    }
+
+    @Test
+    public void testClientDisconnect() throws Exception {
 
         try {
 
@@ -38,30 +204,34 @@ public class AppTest {
                 }
             };
 
-            CallbackFactory<String> callbackFactory = new CallbackFactory<String>() {
+            CallbackFactory<String> callbackFactory = new CallbackFactory<>() {
                 @Override
                 public CallbackServer<String> getCallback() {
                     return new CallbackServer<>() {
 
                         @Override
                         public void onMessageReceive(String message, IClient<String> client) {
-                            client.send(message + " from server");
+
+                            try {
+                                client.send(message);
+                            } catch (InterruptedException e) {
+                                e.printStackTrace();
+                            }
                         }
 
                         @Override
-                        public void onNewClient(IClient<String> client) {
-                            log.info("New client connected");
-                            client.send("Welcome!");
+                        public void onNewClient(IClient<String> client)
+                        {
                         }
 
                         @Override
                         public void onQuitClient(IClient<String> client) {
-                            log.info("Client disconnected");
+                            assert false;
                         }
 
                         @Override
                         public void onException(Exception e) {
-                            log.error(e);
+                            assert false;
                         }
                     };
                 }
@@ -83,24 +253,25 @@ public class AppTest {
 
             @Override
             public void onException(Exception e) {
-                log.error(e);
+                assert false;
             }
 
             @Override
-            public void onDisconnect() {}
+            public void onDisconnect() {assert false;}
         });
 
         client.connect(IP, PORT);
-        client.registration();
         client.start();
 
-        String[] messages = {"aaaaaaaaaaaaaaaaa", "bbbbbbb", "cccc"};
+        String[] messages = {"aaaaaaaaaaaaaaaaa!", "bbbbbbb!", "cccc!"};
         for (String message : messages) {
             client.send(message);
-            Thread.sleep(75);
         }
-        client.close();
-        Thread.sleep(3000);
 
+        //client.send("and another one");
+        Thread.sleep(750);
+
+        //System.out.println(messageFrom + " = " + messageGot);
     }
+
 }
