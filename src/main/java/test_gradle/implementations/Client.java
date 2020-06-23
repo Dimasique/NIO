@@ -1,5 +1,6 @@
 package test_gradle.implementations;
 
+import org.apache.logging.log4j.Level;
 import test_gradle.AbstractClient;
 import test_gradle.Pair;
 import test_gradle.interfaces.CallbackClient;
@@ -65,12 +66,12 @@ public class Client<T> extends AbstractClient<T> {
 
                         } else if (key.isReadable()) {
 
+                            log.info("trying to read message from server");
                             if (!readingPreviousMessage) {
                                 buffer.clear();
                             }
 
                             int receiveData = socketChannel.read(buffer);
-                            //System.out.println(receiveData);
                             if (receiveData == 0 || receiveData == -1) {
                                 connected = false;
                                 callback.onDisconnect();
@@ -89,16 +90,13 @@ public class Client<T> extends AbstractClient<T> {
                             readingPreviousMessage = indexBegin < buffer.position();
                             shiftBuffer(indexBegin);
 
-                            //key.interestOps(SelectionKey.OP_WRITE);
-
                         } else if (key.isWritable()) {
                             T line = queue.poll();
 
                             if (line != null) {
                                 socketChannel.write(decoder.encode(line));
-                                //System.out.println("sent!");
+                                log.info("sent message to server: " + line.toString());
                             }
-                            //key.interestOps(SelectionKey.OP_READ);
                         }
                         i.remove();
                     }
@@ -116,6 +114,8 @@ public class Client<T> extends AbstractClient<T> {
 
     @Override
     public void close(){
+        log.log(Level.INFO, "client is closing...");
+
         try {
             connected = false;
             socketChannel.close();

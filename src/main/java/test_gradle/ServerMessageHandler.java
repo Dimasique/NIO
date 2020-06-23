@@ -1,5 +1,10 @@
 package test_gradle;
 
+import org.apache.logging.log4j.Level;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+
+
 import test_gradle.implementations.ClientServerSide;
 import test_gradle.interfaces.CallbackServer;
 import test_gradle.interfaces.IClient;
@@ -23,6 +28,8 @@ public class ServerMessageHandler<T> {
 
     private final Map<SocketChannel, IClient<T>> clients = new ConcurrentHashMap<>();
     private final Map<SocketChannel, ByteBuffer> buffers = new ConcurrentHashMap<>();
+
+    private final static Logger log = LogManager.getLogger(test_gradle.ServerMessageHandler.class);
 
     public ServerMessageHandler(IDecoder<T> decoder, CallbackServer<T> callback) {
         try {
@@ -64,7 +71,11 @@ public class ServerMessageHandler<T> {
 
                         if (key.isConnectable()) {
                             socketChannel.finishConnect();
+
                         } else if (key.isReadable()) {
+
+                            log.log(Level.INFO, "trying to read message from client...");
+
 
                             if (!((ClientServerSide<T>)client).isReadingPreviousMessage()) {
                                 buffer.clear();
@@ -75,7 +86,7 @@ public class ServerMessageHandler<T> {
                                 client.close();
                                 callback.onQuitClient(client);
                                 clients.remove(socketChannel);
-                                break;
+                                continue;
                             }
 
                             int indexBegin = 0;
@@ -90,10 +101,11 @@ public class ServerMessageHandler<T> {
 
                             //key.interestOps(SelectionKey.OP_WRITE);
                         } else if (key.isWritable()) {
+
                             T line = ((ClientServerSide<T>)client).poll();
                             if (line != null) {
                                 socketChannel.write(decoder.encode(line));
-
+                                log.info("message sent to client: " + line.toString());
                             }
                             //key.interestOps(SelectionKey.OP_READ);
                         }

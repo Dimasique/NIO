@@ -1,5 +1,6 @@
 package test_gradle.implementations;
 
+import org.apache.logging.log4j.Level;
 import test_gradle.ServerMessageHandler;
 import test_gradle.factories.CallbackFactory;
 import test_gradle.factories.DecoderFactory;
@@ -51,6 +52,8 @@ public class Server<T> implements IServer<T> {
                 new ServerMessageHandler<>(decoderFactory.getDecoder(), callbackFactory.getCallback());
         serverMessageHandler.start();
 
+        log.log(Level.INFO, "server started");
+
         new Thread(() -> {
             try {
                 running = true;
@@ -64,6 +67,7 @@ public class Server<T> implements IServer<T> {
                         SelectionKey key = i.next();
 
                         if (key.isAcceptable()) {
+                            log.info("accepting new client");
                             processAcceptEvent(mySocket, key);
                         }
                         i.remove();
@@ -79,6 +83,7 @@ public class Server<T> implements IServer<T> {
     @Override
     public void close() throws IOException{
         running = false;
+        log.log(Level.INFO, "server is closing...");
         serverMessageHandler.close();
         selector.close();
         mySocket.close();
@@ -94,10 +99,10 @@ public class Server<T> implements IServer<T> {
 
         newClient.setChannel(newChannel);
         newClient.setSelector(serverMessageHandler.getSelector());
-        newClient.start();
         serverMessageHandler.addClient(newChannel, newClient);
+        newClient.start();
 
-
+        log.info("new client ran");
         callback.onNewClient(newClient);
     }
 

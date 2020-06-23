@@ -29,6 +29,8 @@ dependencies {
     compile group: 'org.apache.logging.log4j', name: 'log4j-api', version: '2.13.3'
     compile group: 'org.apache.logging.log4j', name: 'log4j-core', version: '2.13.3'
 
+    //compile group: 'org.slf4j', name: 'slf4j-api', version: '1.7.25'
+
     // Use JUnit test framework
     testImplementation 'junit:junit:4.13'
 }
@@ -37,3 +39,4 @@ application {
     // Define the main class for the application.
     mainClassName = 'test_gradle.App'
 }
+
