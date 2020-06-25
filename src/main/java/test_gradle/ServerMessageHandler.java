@@ -5,7 +5,7 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 
-import test_gradle.implementations.ClientServerSide;
+import test_gradle.implementations.clients.ClientServerSide;
 import test_gradle.interfaces.CallbackServer;
 import test_gradle.interfaces.IClient;
 import test_gradle.interfaces.IDecoder;
@@ -19,9 +19,10 @@ import java.util.Iterator;
 import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 public class ServerMessageHandler<T> {
-    private boolean running;
+    private AtomicBoolean running = new AtomicBoolean();
     private IDecoder<T> decoder;
     private Selector selector;
     private CallbackServer<T> callback;
@@ -52,11 +53,11 @@ public class ServerMessageHandler<T> {
     }
 
     public void start() {
-        running = true;
+        running.set(true);
 
         new Thread(() -> {
             try {
-                while (running) {
+                while (running.get()) {
                     selector.select();
 
                     Set<SelectionKey> selectedKeys = selector.selectedKeys();
@@ -74,7 +75,7 @@ public class ServerMessageHandler<T> {
 
                         } else if (key.isReadable()) {
 
-                            log.log(Level.INFO, "trying to read message from client...");
+                            //log.log(Level.INFO, "trying to read message from client...");
 
 
                             if (!((ClientServerSide<T>)client).isReadingPreviousMessage()) {
@@ -93,6 +94,7 @@ public class ServerMessageHandler<T> {
                             Pair<T, Integer> decoded = decoder.decode(buffer, indexBegin, buffer.position());
                             while(decoded != null && indexBegin < buffer.capacity()) {
                                 callback.onMessageReceive(decoded.getKey(), client);
+                                log.log(Level.INFO, "got message from client: " + decoded.getKey().toString());
                                 indexBegin = decoded.getValue() + 1;
                                 decoded = decoder.decode(buffer, indexBegin, buffer.position());
                             }
@@ -120,7 +122,7 @@ public class ServerMessageHandler<T> {
     }
 
     public void close() {
-        running = false;
+        running.set(false);
         try {
             for (SocketChannel channel : clients.keySet()) {
                 channel.close();

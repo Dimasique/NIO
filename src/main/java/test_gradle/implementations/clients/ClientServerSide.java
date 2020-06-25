@@ -1,28 +1,21 @@
-package test_gradle.implementations;
+package test_gradle.implementations.clients;
 
 import test_gradle.AbstractClient;
-import test_gradle.interfaces.CallbackClient;
+import test_gradle.implementations.clients.Client;
 import test_gradle.interfaces.CallbackServer;
-import test_gradle.interfaces.IClient;
 import test_gradle.interfaces.IDecoder;
 
 import java.io.IOException;
-import java.net.InetAddress;
-import java.net.InetSocketAddress;
-import java.nio.ByteBuffer;
 import java.nio.channels.SelectionKey;
 import java.nio.channels.Selector;
 import java.nio.channels.SocketChannel;
-import java.util.*;
-import java.util.concurrent.ArrayBlockingQueue;
-import java.util.concurrent.BlockingQueue;
 
 import org.apache.logging.log4j.Logger;
 import org.apache.logging.log4j.LogManager;
 
 public class ClientServerSide<T> extends AbstractClient<T> {
 
-    private final static Logger log = LogManager.getLogger(test_gradle.implementations.Client.class);
+    private final static Logger log = LogManager.getLogger(Client.class);
     private CallbackServer<T> callback;
 
     public ClientServerSide(IDecoder<T> decoder, CallbackServer<T> callback) {
@@ -47,8 +40,8 @@ public class ClientServerSide<T> extends AbstractClient<T> {
     public void start() {
         try {
             this.socketChannel.configureBlocking(false);
-            this.socketChannel.register(selector,
-                    SelectionKey.OP_CONNECT | SelectionKey.OP_READ | SelectionKey.OP_WRITE);
+            this.socketChannel.register(selector, SelectionKey.OP_READ | SelectionKey.OP_WRITE);
+            connected.set(true);
         }
         catch (IOException e) {
             callback.onException(e);

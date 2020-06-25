@@ -1,4 +1,4 @@
-package test_gradle.implementations;
+package test_gradle.implementations.clients;
 
 import org.apache.logging.log4j.Level;
 import test_gradle.AbstractClient;
@@ -9,20 +9,20 @@ import test_gradle.interfaces.IDecoder;
 import java.io.IOException;
 import java.net.InetAddress;
 import java.net.InetSocketAddress;
-import java.nio.ByteBuffer;
 import java.nio.channels.SelectionKey;
 import java.nio.channels.Selector;
 import java.nio.channels.SocketChannel;
 import java.util.*;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 import org.apache.logging.log4j.Logger;
 import org.apache.logging.log4j.LogManager;
 
 public class Client<T> extends AbstractClient<T> {
 
-    private final static Logger log = LogManager.getLogger(test_gradle.implementations.Client.class);
+    private final static Logger log = LogManager.getLogger(Client.class);
     private CallbackClient<T> callback;
-    private boolean connected;
+    private final AtomicBoolean running = new AtomicBoolean();
 
     public Client(IDecoder<T> decoder, CallbackClient<T> callback) throws IOException{
         this.decoder = decoder;
@@ -41,10 +41,21 @@ public class Client<T> extends AbstractClient<T> {
     public void start() {
 
         try {
-            this.socketChannel = SocketChannel.open(myAddress);
+            this.socketChannel = SocketChannel.open();
             this.socketChannel.configureBlocking(false);
-            this.socketChannel.register(selector,
-                    SelectionKey.OP_CONNECT | SelectionKey.OP_READ | SelectionKey.OP_WRITE);
+
+            if (!this.socketChannel.connect(myAddress)) {
+                this.socketChannel.register(selector,
+                        SelectionKey.OP_CONNECT);
+                log.log(Level.INFO, "channel is not connected yet");
+            }
+
+            else {
+                this.socketChannel.register(selector, SelectionKey.OP_READ | SelectionKey.OP_WRITE);
+                log.log(Level.INFO, "channel is connected already");
+                connected.set(true);
+            }
+
 
         } catch (IOException e) {
             callback.onException(e);
@@ -52,8 +63,8 @@ public class Client<T> extends AbstractClient<T> {
 
         new Thread(() -> {
             try {
-                connected = true;
-                while (connected) {
+                running.set(true);
+                while (running.get()) {
                     selector.select();
 
                     Set<SelectionKey> selectedKeys = selector.selectedKeys();
@@ -63,26 +74,30 @@ public class Client<T> extends AbstractClient<T> {
                         SelectionKey key = i.next();
                         if (key.isConnectable()) {
                             socketChannel.finishConnect();
+                            key.interestOps(SelectionKey.OP_READ | SelectionKey.OP_WRITE);
+                            connected.set(true);
+
+                            log.info("client is connected now");
 
                         } else if (key.isReadable()) {
 
-                            log.info("trying to read message from server");
+                            //log.info("trying to read message from server");
                             if (!readingPreviousMessage) {
                                 buffer.clear();
                             }
 
                             int receiveData = socketChannel.read(buffer);
                             if (receiveData == 0 || receiveData == -1) {
-                                connected = false;
+                                running.set(false);
                                 callback.onDisconnect();
-                                i.remove();
-                                continue;
+                                break;
                             }
 
                             indexBegin = 0;
                             Pair<T, Integer> decoded = decoder.decode(buffer, indexBegin, buffer.position());
                             while(decoded != null && indexBegin < buffer.capacity()) {
                                 callback.onMessageReceive(decoded.getKey());
+                                log.info("got message from server: " + decoded.getKey().toString());
                                 indexBegin = decoded.getValue() + 1;
                                 decoded = decoder.decode(buffer, indexBegin, buffer.position());
                             }
@@ -117,7 +132,7 @@ public class Client<T> extends AbstractClient<T> {
         log.log(Level.INFO, "client is closing...");
 
         try {
-            connected = false;
+            running.set(false);
             socketChannel.close();
         }
         catch (IOException e) {

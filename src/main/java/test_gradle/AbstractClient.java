@@ -11,9 +11,10 @@ import java.nio.channels.Selector;
 import java.nio.channels.SocketChannel;
 import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.BlockingQueue;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 public abstract class AbstractClient<T> implements IClient<T> {
-    protected SocketChannel socketChannel = null;
+    protected SocketChannel socketChannel;
     protected IDecoder<T> decoder;
     protected Selector selector;
     protected final ByteBuffer buffer = ByteBuffer.allocate(1024);
@@ -21,11 +22,16 @@ public abstract class AbstractClient<T> implements IClient<T> {
     protected boolean readingPreviousMessage;
     protected int indexBegin;
     protected InetSocketAddress myAddress;
+    protected final AtomicBoolean connected = new AtomicBoolean();
 
     @Override
     public void send(T message) throws InterruptedException {
-        queue.put(message);
-        selector.wakeup();
+
+        if (connected.get()) {
+            queue.put(message);
+            selector.wakeup();
+        }
+
     }
 
 }

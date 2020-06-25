@@ -20,13 +20,12 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="da60f29b-42a7-4fa1-b33c-aba9be32a9b8" name="Default Changelist" comment="">
-      <change beforePath="$PROJECT_DIR$/.idea/misc.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/misc.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/build.gradle" beforeDir="false" afterPath="$PROJECT_DIR$/build.gradle" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/test_gradle/AbstractClient.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/test_gradle/AbstractClient.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/main/java/test_gradle/ServerMessageHandler.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/test_gradle/ServerMessageHandler.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/test_gradle/implementations/Client.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/test_gradle/implementations/Client.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/test_gradle/implementations/Client.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/test_gradle/implementations/clients/Client.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/test_gradle/implementations/ClientServerSide.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/test_gradle/implementations/clients/ClientServerSide.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/main/java/test_gradle/implementations/Server.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/test_gradle/implementations/Server.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/resources/log4j.properties" beforeDir="false" />
       <change beforePath="$PROJECT_DIR$/src/test/java/test_gradle/AppTest.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/test/java/test_gradle/AppTest.java" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
@@ -103,7 +102,26 @@
     <property name="settings.editor.selected.configurable" value="reference.settingsdialog.project.gradle" />
     <property name="show.unlinked.gradle.project.popup" value="true" />
   </component>
-  <component name="RunManager" selected="Gradle.AppTest.testSendingFromServer">
+  <component name="RunManager" selected="Gradle.AppTest.testSendingFromClient">
+    <configuration name="AppTest" type="GradleRunConfiguration" factoryName="Gradle" temporary="true">
+      <ExternalSystemSettings>
+        <option name="executionName" />
+        <option name="externalProjectPath" value="$PROJECT_DIR$" />
+        <option name="externalSystemIdString" value="GRADLE" />
+        <option name="scriptParameters" value="--tests &quot;test_gradle.AppTest&quot;" />
+        <option name="taskDescriptions">
+          <list />
+        </option>
+        <option name="taskNames">
+          <list>
+            <option value=":test" />
+          </list>
+        </option>
+        <option name="vmOptions" />
+      </ExternalSystemSettings>
+      <GradleScriptDebugEnabled>false</GradleScriptDebugEnabled>
+      <method v="2" />
+    </configuration>
     <configuration name="AppTest.testClientDisconnect" type="GradleRunConfiguration" factoryName="Gradle" temporary="true">
       <ExternalSystemSettings>
         <option name="executionName" />
@@ -182,33 +200,13 @@
       <GradleScriptDebugEnabled>false</GradleScriptDebugEnabled>
       <method v="2" />
     </configuration>
-    <configuration name="AppTest.testSendingMessages" type="GradleRunConfiguration" factoryName="Gradle" temporary="true">
-      <ExternalSystemSettings>
-        <option name="executionName" />
-        <option name="externalProjectPath" value="$PROJECT_DIR$" />
-        <option name="externalSystemIdString" value="GRADLE" />
-        <option name="scriptParameters" value="--tests &quot;test_gradle.AppTest.testSendingMessages&quot;" />
-        <option name="taskDescriptions">
-          <list />
-        </option>
-        <option name="taskNames">
-          <list>
-            <option value=":cleanTest" />
-            <option value=":test" />
-          </list>
-        </option>
-        <option name="vmOptions" />
-      </ExternalSystemSettings>
-      <GradleScriptDebugEnabled>false</GradleScriptDebugEnabled>
-      <method v="2" />
-    </configuration>
     <recent_temporary>
       <list>
-        <item itemvalue="Gradle.AppTest.testSendingFromServer" />
         <item itemvalue="Gradle.AppTest.testSendingFromClient" />
+        <item itemvalue="Gradle.AppTest.testSendingFromServer" />
+        <item itemvalue="Gradle.AppTest" />
         <item itemvalue="Gradle.AppTest.testMessageFromServer" />
         <item itemvalue="Gradle.AppTest.testClientDisconnect" />
-        <item itemvalue="Gradle.AppTest.testSendingMessages" />
       </list>
     </recent_temporary>
   </component>
@@ -250,6 +248,7 @@
         </entry>
       </map>
     </option>
+    <option name="oldMeFiltersMigrated" value="true" />
   </component>
   <component name="WindowStateProjectService">
     <state x="361" y="0" key="#Project_Structure" timestamp="1592904752916">
@@ -260,10 +259,10 @@
       <screen x="0" y="0" width="1536" height="824" />
     </state>
     <state x="509" y="214" key="#com.intellij.fileTypes.FileTypeChooser/0.0.1536.824@0.0.1536.824" timestamp="1592905747912" />
-    <state x="574" y="122" key="#com.intellij.ide.util.MemberChooser" timestamp="1592478770295">
+    <state x="574" y="122" key="#com.intellij.ide.util.MemberChooser" timestamp="1593071053645">
       <screen x="0" y="0" width="1536" height="824" />
     </state>
-    <state x="574" y="122" key="#com.intellij.ide.util.MemberChooser/0.0.1536.824@0.0.1536.824" timestamp="1592478770295" />
+    <state x="574" y="122" key="#com.intellij.ide.util.MemberChooser/0.0.1536.824@0.0.1536.824" timestamp="1593071053645" />
     <state x="428" y="0" key="#com.intellij.refactoring.rename.AutomaticRenamingDialog" timestamp="1592203751426">
       <screen x="0" y="0" width="1536" height="824" />
     </state>
@@ -284,22 +283,22 @@
       <screen x="0" y="0" width="1536" height="824" />
     </state>
     <state x="549" y="167" key="FileChooserDialogImpl/0.0.1536.824@0.0.1536.824" timestamp="1591894436220" />
-    <state width="1493" height="210" key="GridCell.Tab.0.bottom" timestamp="1592913500134">
+    <state width="1493" height="210" key="GridCell.Tab.0.bottom" timestamp="1593087417326">
       <screen x="0" y="0" width="1536" height="824" />
     </state>
-    <state width="1493" height="210" key="GridCell.Tab.0.bottom/0.0.1536.824@0.0.1536.824" timestamp="1592913500134" />
-    <state width="1493" height="210" key="GridCell.Tab.0.center" timestamp="1592913500134">
+    <state width="1493" height="210" key="GridCell.Tab.0.bottom/0.0.1536.824@0.0.1536.824" timestamp="1593087417326" />
+    <state width="1493" height="210" key="GridCell.Tab.0.center" timestamp="1593087417325">
       <screen x="0" y="0" width="1536" height="824" />
     </state>
-    <state width="1493" height="210" key="GridCell.Tab.0.center/0.0.1536.824@0.0.1536.824" timestamp="1592913500134" />
-    <state width="1493" height="210" key="GridCell.Tab.0.left" timestamp="1592913500134">
+    <state width="1493" height="210" key="GridCell.Tab.0.center/0.0.1536.824@0.0.1536.824" timestamp="1593087417325" />
+    <state width="1493" height="210" key="GridCell.Tab.0.left" timestamp="1593087417325">
       <screen x="0" y="0" width="1536" height="824" />
     </state>
-    <state width="1493" height="210" key="GridCell.Tab.0.left/0.0.1536.824@0.0.1536.824" timestamp="1592913500134" />
-    <state width="1493" height="210" key="GridCell.Tab.0.right" timestamp="1592913500134">
+    <state width="1493" height="210" key="GridCell.Tab.0.left/0.0.1536.824@0.0.1536.824" timestamp="1593087417325" />
+    <state width="1493" height="210" key="GridCell.Tab.0.right" timestamp="1593087417326">
       <screen x="0" y="0" width="1536" height="824" />
     </state>
-    <state width="1493" height="210" key="GridCell.Tab.0.right/0.0.1536.824@0.0.1536.824" timestamp="1592913500134" />
+    <state width="1493" height="210" key="GridCell.Tab.0.right/0.0.1536.824@0.0.1536.824" timestamp="1593087417326" />
     <state width="1493" height="261" key="GridCell.Tab.1.bottom" timestamp="1591785077863">
       <screen x="0" y="0" width="1536" height="824" />
     </state>

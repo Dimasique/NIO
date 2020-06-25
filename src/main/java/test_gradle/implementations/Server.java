@@ -4,6 +4,7 @@ import org.apache.logging.log4j.Level;
 import test_gradle.ServerMessageHandler;
 import test_gradle.factories.CallbackFactory;
 import test_gradle.factories.DecoderFactory;
+import test_gradle.implementations.clients.ClientServerSide;
 import test_gradle.interfaces.*;
 
 import java.io.IOException;
@@ -14,6 +15,8 @@ import java.nio.channels.Selector;
 import java.nio.channels.ServerSocketChannel;
 import java.nio.channels.SocketChannel;
 import java.util.*;
+import java.util.concurrent.atomic.AtomicBoolean;
+
 import org.apache.logging.log4j.Logger;
 import org.apache.logging.log4j.LogManager;
 
@@ -22,7 +25,7 @@ public class Server<T> implements IServer<T> {
     private final static Logger log = LogManager.getLogger(test_gradle.implementations.Server.class);
     private final Selector selector;
     private final ServerSocketChannel mySocket;
-    private boolean running;
+    private AtomicBoolean running = new AtomicBoolean();
     private final CallbackServer<T> callback;
     private CallbackFactory<T> callbackFactory;
     private DecoderFactory<T> decoderFactory;
@@ -56,8 +59,8 @@ public class Server<T> implements IServer<T> {
 
         new Thread(() -> {
             try {
-                running = true;
-                while (running) {
+                running.set(true);
+                while (running.get()) {
 
                     selector.select();
                     Set<SelectionKey> selectedKeys = selector.selectedKeys();
@@ -82,10 +85,10 @@ public class Server<T> implements IServer<T> {
 
     @Override
     public void close() throws IOException{
-        running = false;
+        running.set(false);
         log.log(Level.INFO, "server is closing...");
         serverMessageHandler.close();
-        selector.close();
+        mySocket.socket().close();
         mySocket.close();
     }
 
