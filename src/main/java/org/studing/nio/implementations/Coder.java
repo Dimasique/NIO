@@ -1,7 +1,7 @@
-package test_gradle.implementations;
+package org.studing.nio.implementations;
 
-import test_gradle.Pair;
-import test_gradle.interfaces.IDecoder;
+import org.studing.nio.Pair;
+import org.studing.nio.interfaces.IDecoder;
 
 import java.nio.ByteBuffer;
 import java.nio.charset.StandardCharsets;

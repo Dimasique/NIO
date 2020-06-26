@@ -1,9 +1,8 @@
-package test_gradle.implementations.clients;
+package org.studing.nio.implementations.clients;
 
-import test_gradle.AbstractClient;
-import test_gradle.implementations.clients.Client;
-import test_gradle.interfaces.CallbackServer;
-import test_gradle.interfaces.IDecoder;
+import org.studing.nio.AbstractClient;
+import org.studing.nio.interfaces.CallbackServer;
+import org.studing.nio.interfaces.IDecoder;
 
 import java.io.IOException;
 import java.nio.channels.SelectionKey;

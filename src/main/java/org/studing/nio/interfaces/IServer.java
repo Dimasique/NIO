@@ -1,4 +1,4 @@
-package test_gradle.interfaces;
+package org.studing.nio.interfaces;
 
 import java.io.IOException;
 

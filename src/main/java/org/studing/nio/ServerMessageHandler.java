@@ -1,14 +1,14 @@
-package test_gradle;
+package org.studing.nio;
 
 import org.apache.logging.log4j.Level;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 
-import test_gradle.implementations.clients.ClientServerSide;
-import test_gradle.interfaces.CallbackServer;
-import test_gradle.interfaces.IClient;
-import test_gradle.interfaces.IDecoder;
+import org.studing.nio.implementations.clients.ClientServerSide;
+import org.studing.nio.interfaces.IClient;
+import org.studing.nio.interfaces.CallbackServer;
+import org.studing.nio.interfaces.IDecoder;
 
 import java.io.IOException;
 import java.nio.ByteBuffer;
@@ -30,7 +30,7 @@ public class ServerMessageHandler<T> {
     private final Map<SocketChannel, IClient<T>> clients = new ConcurrentHashMap<>();
     private final Map<SocketChannel, ByteBuffer> buffers = new ConcurrentHashMap<>();
 
-    private final static Logger log = LogManager.getLogger(test_gradle.ServerMessageHandler.class);
+    private final static Logger log = LogManager.getLogger(ServerMessageHandler.class);
 
     public ServerMessageHandler(IDecoder<T> decoder, CallbackServer<T> callback) {
         try {
@@ -58,7 +58,7 @@ public class ServerMessageHandler<T> {
         new Thread(() -> {
             try {
                 while (running.get()) {
-                    selector.select();
+                    selector.selectNow();
 
                     Set<SelectionKey> selectedKeys = selector.selectedKeys();
                     Iterator<SelectionKey> i = selectedKeys.iterator();

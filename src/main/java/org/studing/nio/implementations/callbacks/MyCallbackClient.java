@@ -1,6 +1,6 @@
-package test_gradle.implementations.callbacks;
+package org.studing.nio.implementations.callbacks;
 
-import test_gradle.interfaces.CallbackClient;
+import org.studing.nio.interfaces.CallbackClient;
 
 import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.BlockingQueue;

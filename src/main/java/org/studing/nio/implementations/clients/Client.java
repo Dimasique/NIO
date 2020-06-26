@@ -1,10 +1,10 @@
-package test_gradle.implementations.clients;
+package org.studing.nio.implementations.clients;
 
 import org.apache.logging.log4j.Level;
-import test_gradle.AbstractClient;
-import test_gradle.Pair;
-import test_gradle.interfaces.CallbackClient;
-import test_gradle.interfaces.IDecoder;
+import org.studing.nio.AbstractClient;
+import org.studing.nio.Pair;
+import org.studing.nio.interfaces.CallbackClient;
+import org.studing.nio.interfaces.IDecoder;
 
 import java.io.IOException;
 import java.net.InetAddress;

@@ -1,11 +1,12 @@
-package test_gradle.implementations;
+package org.studing.nio.implementations;
 
 import org.apache.logging.log4j.Level;
-import test_gradle.ServerMessageHandler;
-import test_gradle.factories.CallbackFactory;
-import test_gradle.factories.DecoderFactory;
-import test_gradle.implementations.clients.ClientServerSide;
-import test_gradle.interfaces.*;
+import org.studing.nio.ServerMessageHandler;
+import org.studing.nio.factories.CallbackFactory;
+import org.studing.nio.factories.DecoderFactory;
+import org.studing.nio.implementations.clients.ClientServerSide;
+import org.studing.nio.interfaces.CallbackServer;
+import org.studing.nio.interfaces.IServer;
 
 import java.io.IOException;
 import java.net.InetAddress;
@@ -22,7 +23,7 @@ import org.apache.logging.log4j.LogManager;
 
 public class Server<T> implements IServer<T> {
 
-    private final static Logger log = LogManager.getLogger(test_gradle.implementations.Server.class);
+    private final static Logger log = LogManager.getLogger(Server.class);
     private final Selector selector;
     private final ServerSocketChannel mySocket;
     private AtomicBoolean running = new AtomicBoolean();

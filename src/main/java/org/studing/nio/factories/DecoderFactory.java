@@ -1,6 +1,6 @@
-package test_gradle.factories;
+package org.studing.nio.factories;
 
-import test_gradle.interfaces.IDecoder;
+import org.studing.nio.interfaces.IDecoder;
 
 public abstract class DecoderFactory<T> {
 

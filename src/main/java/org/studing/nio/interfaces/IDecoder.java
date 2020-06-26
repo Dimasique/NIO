@@ -1,6 +1,6 @@
-package test_gradle.interfaces;
+package org.studing.nio.interfaces;
 
-import test_gradle.Pair;
+import org.studing.nio.Pair;
 
 import java.nio.ByteBuffer;
 

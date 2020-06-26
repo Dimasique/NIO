@@ -1,9 +1,8 @@
-package test_gradle.implementations.callbacks;
+package org.studing.nio.implementations.callbacks;
 
-import test_gradle.interfaces.CallbackServer;
-import test_gradle.interfaces.IClient;
+import org.studing.nio.interfaces.CallbackServer;
+import org.studing.nio.interfaces.IClient;
 
-import java.io.IOException;
 import java.util.List;
 import java.util.concurrent.BlockingQueue;
 

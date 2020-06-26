@@ -1,12 +1,10 @@
-package test_gradle;
+package org.studing.nio;
 
-import test_gradle.interfaces.IClient;
-import test_gradle.interfaces.IDecoder;
+import org.studing.nio.interfaces.IClient;
+import org.studing.nio.interfaces.IDecoder;
 
-import java.io.IOException;
 import java.net.InetSocketAddress;
 import java.nio.ByteBuffer;
-import java.nio.channels.SelectionKey;
 import java.nio.channels.Selector;
 import java.nio.channels.SocketChannel;
 import java.util.concurrent.ArrayBlockingQueue;

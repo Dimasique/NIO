@@ -21,12 +21,25 @@
   <component name="ChangeListManager">
     <list default="true" id="da60f29b-42a7-4fa1-b33c-aba9be32a9b8" name="Default Changelist" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/test_gradle/AbstractClient.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/test_gradle/AbstractClient.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/test_gradle/ServerMessageHandler.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/test_gradle/ServerMessageHandler.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/test_gradle/implementations/Client.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/test_gradle/implementations/clients/Client.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/test_gradle/implementations/ClientServerSide.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/test_gradle/implementations/clients/ClientServerSide.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/test_gradle/implementations/Server.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/test_gradle/implementations/Server.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/test/java/test_gradle/AppTest.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/test/java/test_gradle/AppTest.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/test_gradle/AbstractClient.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/org/studing/nio/AbstractClient.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/test_gradle/Pair.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/org/studing/nio/Pair.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/test_gradle/ServerMessageHandler.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/org/studing/nio/ServerMessageHandler.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/test_gradle/factories/CallbackFactory.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/org/studing/nio/factories/CallbackFactory.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/test_gradle/factories/DecoderFactory.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/org/studing/nio/factories/DecoderFactory.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/test_gradle/implementations/Coder.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/org/studing/nio/implementations/Coder.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/test_gradle/implementations/Server.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/org/studing/nio/implementations/Server.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/test_gradle/implementations/callbacks/MyCallbackClient.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/org/studing/nio/implementations/callbacks/MyCallbackClient.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/test_gradle/implementations/callbacks/MyCallbackServer.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/org/studing/nio/implementations/callbacks/MyCallbackServer.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/test_gradle/implementations/clients/Client.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/org/studing/nio/implementations/clients/Client.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/test_gradle/implementations/clients/ClientServerSide.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/org/studing/nio/implementations/clients/ClientServerSide.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/test_gradle/implementations/factories/MyCallbackFactory.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/org/studing/nio/implementations/factories/MyCallbackFactory.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/test_gradle/implementations/factories/MyDecoderFactory.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/org/studing/nio/implementations/factories/MyDecoderFactory.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/test_gradle/interfaces/CallbackClient.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/org/studing/nio/interfaces/CallbackClient.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/test_gradle/interfaces/CallbackServer.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/org/studing/nio/interfaces/CallbackServer.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/test_gradle/interfaces/IClient.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/org/studing/nio/interfaces/IClient.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/test_gradle/interfaces/IDecoder.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/org/studing/nio/interfaces/IDecoder.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/test_gradle/interfaces/IServer.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/org/studing/nio/interfaces/IServer.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/test/java/test_gradle/AppTest.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/test/java/org/studing/nio/AppTest.java" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -102,13 +115,13 @@
     <property name="settings.editor.selected.configurable" value="reference.settingsdialog.project.gradle" />
     <property name="show.unlinked.gradle.project.popup" value="true" />
   </component>
-  <component name="RunManager" selected="Gradle.AppTest.testSendingFromClient">
+  <component name="RunManager" selected="Gradle.AppTest">
     <configuration name="AppTest" type="GradleRunConfiguration" factoryName="Gradle" temporary="true">
       <ExternalSystemSettings>
         <option name="executionName" />
         <option name="externalProjectPath" value="$PROJECT_DIR$" />
         <option name="externalSystemIdString" value="GRADLE" />
-        <option name="scriptParameters" value="--tests &quot;test_gradle.AppTest&quot;" />
+        <option name="scriptParameters" value="--tests &quot;org.studing.nio.AppTest&quot;" />
         <option name="taskDescriptions">
           <list />
         </option>
@@ -122,18 +135,17 @@
       <GradleScriptDebugEnabled>false</GradleScriptDebugEnabled>
       <method v="2" />
     </configuration>
-    <configuration name="AppTest.testClientDisconnect" type="GradleRunConfiguration" factoryName="Gradle" temporary="true">
+    <configuration name="AppTest.sendThreeMessagesFromServer" type="GradleRunConfiguration" factoryName="Gradle" temporary="true">
       <ExternalSystemSettings>
         <option name="executionName" />
         <option name="externalProjectPath" value="$PROJECT_DIR$" />
         <option name="externalSystemIdString" value="GRADLE" />
-        <option name="scriptParameters" value="--tests &quot;test_gradle.AppTest.testClientDisconnect&quot;" />
+        <option name="scriptParameters" value="--tests &quot;test_gradle.AppTest.sendThreeMessagesFromServer&quot;" />
         <option name="taskDescriptions">
           <list />
         </option>
         <option name="taskNames">
           <list>
-            <option value=":cleanTest" />
             <option value=":test" />
           </list>
         </option>
@@ -166,13 +178,12 @@
         <option name="executionName" />
         <option name="externalProjectPath" value="$PROJECT_DIR$" />
         <option name="externalSystemIdString" value="GRADLE" />
-        <option name="scriptParameters" value="--tests &quot;test_gradle.AppTest.testSendingFromClient&quot;" />
+        <option name="scriptParameters" value="--tests &quot;org.studing.nio.AppTest.testSendingFromClient&quot;" />
         <option name="taskDescriptions">
           <list />
         </option>
         <option name="taskNames">
           <list>
-            <option value=":cleanTest" />
             <option value=":test" />
           </list>
         </option>
@@ -202,11 +213,11 @@
     </configuration>
     <recent_temporary>
       <list>
-        <item itemvalue="Gradle.AppTest.testSendingFromClient" />
-        <item itemvalue="Gradle.AppTest.testSendingFromServer" />
         <item itemvalue="Gradle.AppTest" />
-        <item itemvalue="Gradle.AppTest.testMessageFromServer" />
-        <item itemvalue="Gradle.AppTest.testClientDisconnect" />
+        <item itemvalue="Gradle.AppTest.testSendingFromClient" />
+        <item itemvalue="Gradle.AppTest" />
+        <item itemvalue="Gradle.AppTest.testSendingFromServer" />
+        <item itemvalue="Gradle.AppTest.sendThreeMessagesFromServer" />
       </list>
     </recent_temporary>
   </component>
@@ -283,22 +294,22 @@
       <screen x="0" y="0" width="1536" height="824" />
     </state>
     <state x="549" y="167" key="FileChooserDialogImpl/0.0.1536.824@0.0.1536.824" timestamp="1591894436220" />
-    <state width="1493" height="210" key="GridCell.Tab.0.bottom" timestamp="1593087417326">
+    <state width="1493" height="210" key="GridCell.Tab.0.bottom" timestamp="1593156954852">
       <screen x="0" y="0" width="1536" height="824" />
     </state>
-    <state width="1493" height="210" key="GridCell.Tab.0.bottom/0.0.1536.824@0.0.1536.824" timestamp="1593087417326" />
-    <state width="1493" height="210" key="GridCell.Tab.0.center" timestamp="1593087417325">
+    <state width="1493" height="210" key="GridCell.Tab.0.bottom/0.0.1536.824@0.0.1536.824" timestamp="1593156954852" />
+    <state width="1493" height="210" key="GridCell.Tab.0.center" timestamp="1593156954852">
       <screen x="0" y="0" width="1536" height="824" />
     </state>
-    <state width="1493" height="210" key="GridCell.Tab.0.center/0.0.1536.824@0.0.1536.824" timestamp="1593087417325" />
-    <state width="1493" height="210" key="GridCell.Tab.0.left" timestamp="1593087417325">
+    <state width="1493" height="210" key="GridCell.Tab.0.center/0.0.1536.824@0.0.1536.824" timestamp="1593156954852" />
+    <state width="1493" height="210" key="GridCell.Tab.0.left" timestamp="1593156954852">
       <screen x="0" y="0" width="1536" height="824" />
     </state>
-    <state width="1493" height="210" key="GridCell.Tab.0.left/0.0.1536.824@0.0.1536.824" timestamp="1593087417325" />
-    <state width="1493" height="210" key="GridCell.Tab.0.right" timestamp="1593087417326">
+    <state width="1493" height="210" key="GridCell.Tab.0.left/0.0.1536.824@0.0.1536.824" timestamp="1593156954852" />
+    <state width="1493" height="210" key="GridCell.Tab.0.right" timestamp="1593156954852">
       <screen x="0" y="0" width="1536" height="824" />
     </state>
-    <state width="1493" height="210" key="GridCell.Tab.0.right/0.0.1536.824@0.0.1536.824" timestamp="1593087417326" />
+    <state width="1493" height="210" key="GridCell.Tab.0.right/0.0.1536.824@0.0.1536.824" timestamp="1593156954852" />
     <state width="1493" height="261" key="GridCell.Tab.1.bottom" timestamp="1591785077863">
       <screen x="0" y="0" width="1536" height="824" />
     </state>

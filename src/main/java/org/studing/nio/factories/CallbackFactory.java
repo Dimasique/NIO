@@ -1,6 +1,6 @@
-package test_gradle.factories;
+package org.studing.nio.factories;
 
-import test_gradle.interfaces.CallbackServer;
+import org.studing.nio.interfaces.CallbackServer;
 
 public abstract class CallbackFactory<T> {
 

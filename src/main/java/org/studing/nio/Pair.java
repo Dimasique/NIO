@@ -1,4 +1,4 @@
-package test_gradle;
+package org.studing.nio;
 
 public class Pair<K, U> {
     private final K key;

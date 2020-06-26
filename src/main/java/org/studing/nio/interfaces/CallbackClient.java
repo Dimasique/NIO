@@ -1,4 +1,4 @@
-package test_gradle.interfaces;
+package org.studing.nio.interfaces;
 
 public interface CallbackClient<T> {
 
