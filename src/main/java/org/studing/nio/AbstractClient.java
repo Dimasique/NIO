@@ -29,7 +29,6 @@ public abstract class AbstractClient<T> implements IClient<T> {
             queue.put(message);
             selector.wakeup();
         }
-
     }
 
 }

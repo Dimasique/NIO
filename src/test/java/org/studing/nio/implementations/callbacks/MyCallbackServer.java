@@ -5,14 +5,17 @@ import org.studing.nio.interfaces.IClient;
 
 import java.util.List;
 import java.util.concurrent.BlockingQueue;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 public class MyCallbackServer<T> implements CallbackServer<T> {
-    private List<IClient<T>> clients;
-    private BlockingQueue<T> messages;
+    private final List<IClient<T>> clients;
+    private final BlockingQueue<T> messages;
+    private final AtomicBoolean wasException;
 
-    public MyCallbackServer(List<IClient<T>> clients, BlockingQueue<T> messages) {
+    public MyCallbackServer(List<IClient<T>> clients, BlockingQueue<T> messages, AtomicBoolean wasException) {
         this.clients = clients;
         this.messages = messages;
+        this.wasException = wasException;
     }
 
     @Override
@@ -36,6 +39,11 @@ public class MyCallbackServer<T> implements CallbackServer<T> {
 
     @Override
     public void onException(Exception e) {
+        wasException.set(true);
+    }
+
+    public boolean getWasException() {
+        return wasException.get();
     }
 
 }

@@ -22,10 +22,11 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 public class ServerMessageHandler<T> {
-    private AtomicBoolean running = new AtomicBoolean();
+    private final AtomicBoolean running = new AtomicBoolean();
     private IDecoder<T> decoder;
     private Selector selector;
     private CallbackServer<T> callback;
+    private Thread thread;
 
     private final Map<SocketChannel, IClient<T>> clients = new ConcurrentHashMap<>();
     private final Map<SocketChannel, ByteBuffer> buffers = new ConcurrentHashMap<>();
@@ -46,6 +47,7 @@ public class ServerMessageHandler<T> {
     public void addClient(SocketChannel socketChannel, IClient<T> client) {
         clients.put(socketChannel, client);
         buffers.put(socketChannel, ByteBuffer.allocate(1024));
+        selector.wakeup();
     }
 
     public Selector getSelector() {
@@ -55,17 +57,19 @@ public class ServerMessageHandler<T> {
     public void start() {
         running.set(true);
 
-        new Thread(() -> {
+        thread = new Thread(() -> {
             try {
                 while (running.get()) {
-                    selector.selectNow();
+                    selector.select();
+                    if (!running.get())
+                        break;
 
                     Set<SelectionKey> selectedKeys = selector.selectedKeys();
                     Iterator<SelectionKey> i = selectedKeys.iterator();
 
                     while (i.hasNext()) {
                         SelectionKey key = i.next();
-                        SocketChannel socketChannel = (SocketChannel)key.channel();
+                        SocketChannel socketChannel = (SocketChannel) key.channel();
 
                         ByteBuffer buffer = buffers.get(socketChannel);
                         IClient<T> client = clients.get(socketChannel);
@@ -78,7 +82,7 @@ public class ServerMessageHandler<T> {
                             //log.log(Level.INFO, "trying to read message from client...");
 
 
-                            if (!((ClientServerSide<T>)client).isReadingPreviousMessage()) {
+                            if (!((ClientServerSide<T>) client).isReadingPreviousMessage()) {
                                 buffer.clear();
                             }
 
@@ -92,7 +96,7 @@ public class ServerMessageHandler<T> {
 
                             int indexBegin = 0;
                             Pair<T, Integer> decoded = decoder.decode(buffer, indexBegin, buffer.position());
-                            while(decoded != null && indexBegin < buffer.capacity()) {
+                            while (decoded != null && indexBegin < buffer.capacity()) {
                                 callback.onMessageReceive(decoded.getKey(), client);
                                 log.log(Level.INFO, "got message from client: " + decoded.getKey().toString());
                                 indexBegin = decoded.getValue() + 1;
@@ -104,7 +108,7 @@ public class ServerMessageHandler<T> {
                             //key.interestOps(SelectionKey.OP_WRITE);
                         } else if (key.isWritable()) {
 
-                            T line = ((ClientServerSide<T>)client).poll();
+                            T line = ((ClientServerSide<T>) client).poll();
                             if (line != null) {
                                 socketChannel.write(decoder.encode(line));
                                 log.info("message sent to client: " + line.toString());
@@ -112,25 +116,40 @@ public class ServerMessageHandler<T> {
                             //key.interestOps(SelectionKey.OP_READ);
                         }
                         i.remove();
+
                     }
                 }
             }
-            catch (IOException e) {
+            catch (Exception e) {
                 callback.onException(e);
             }
-        }).start();
+        });
+
+        thread.start();
     }
 
     public void close() {
         running.set(false);
+
         try {
             for (SocketChannel channel : clients.keySet()) {
                 channel.close();
             }
-        }
-        catch (IOException e) {
+        } catch (IOException e) {
             callback.onException(e);
         }
+
+        selector.wakeup();
+
+        log.log(Level.INFO, "all clients are closed");
+
+        try {
+            thread.join();
+        } catch (InterruptedException e) {
+            callback.onException(e);
+        }
+
+        log.log(Level.INFO, "handler is closed");
     }
 
     private void shiftBuffer(ByteBuffer buffer, int end) {

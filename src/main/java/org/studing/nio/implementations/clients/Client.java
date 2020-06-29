@@ -23,6 +23,7 @@ public class Client<T> extends AbstractClient<T> {
     private final static Logger log = LogManager.getLogger(Client.class);
     private CallbackClient<T> callback;
     private final AtomicBoolean running = new AtomicBoolean();
+    private Thread thread;
 
     public Client(IDecoder<T> decoder, CallbackClient<T> callback) throws IOException{
         this.decoder = decoder;
@@ -39,6 +40,10 @@ public class Client<T> extends AbstractClient<T> {
 
     @Override
     public void start() {
+
+        if (running.get()) {
+            callback.onException(new Exception("Client has already started"));
+        }
 
         try {
             this.socketChannel = SocketChannel.open();
@@ -61,11 +66,14 @@ public class Client<T> extends AbstractClient<T> {
             callback.onException(e);
         }
 
-        new Thread(() -> {
+        thread = new Thread(() -> {
             try {
                 running.set(true);
                 while (running.get()) {
+
                     selector.select();
+                    if (!running.get())
+                        break;
 
                     Set<SelectionKey> selectedKeys = selector.selectedKeys();
                     Iterator<SelectionKey> i = selectedKeys.iterator();
@@ -95,7 +103,7 @@ public class Client<T> extends AbstractClient<T> {
 
                             indexBegin = 0;
                             Pair<T, Integer> decoded = decoder.decode(buffer, indexBegin, buffer.position());
-                            while(decoded != null && indexBegin < buffer.capacity()) {
+                            while (decoded != null && indexBegin < buffer.capacity()) {
                                 callback.onMessageReceive(decoded.getKey());
                                 log.info("got message from server: " + decoded.getKey().toString());
                                 indexBegin = decoded.getValue() + 1;
@@ -114,13 +122,15 @@ public class Client<T> extends AbstractClient<T> {
                             }
                         }
                         i.remove();
+
                     }
                 }
-            }
-            catch (IOException e) {
+            } catch (Exception e) {
                 callback.onException(e);
             }
-        }).start();
+        });
+
+        thread.start();
     }
 
     public void setCallback(CallbackClient<T> callback) {
@@ -134,8 +144,14 @@ public class Client<T> extends AbstractClient<T> {
         try {
             running.set(false);
             socketChannel.close();
+        } catch (IOException e) {
+            callback.onException(e);
         }
-        catch (IOException e) {
+
+        selector.wakeup();
+        try {
+            thread.join();
+        } catch (InterruptedException e) {
             callback.onException(e);
         }
     }

@@ -24,46 +24,58 @@ import org.apache.logging.log4j.LogManager;
 public class Server<T> implements IServer<T> {
 
     private final static Logger log = LogManager.getLogger(Server.class);
-    private final Selector selector;
-    private final ServerSocketChannel mySocket;
-    private AtomicBoolean running = new AtomicBoolean();
+    private Selector selector;
+    private ServerSocketChannel mySocket;
+    private final AtomicBoolean running = new AtomicBoolean();
     private final CallbackServer<T> callback;
     private CallbackFactory<T> callbackFactory;
     private DecoderFactory<T> decoderFactory;
     private ServerMessageHandler<T> serverMessageHandler;
+    private Thread thread;
 
     public Server(String IP, int port, DecoderFactory<T> decoderFactory,
-                  CallbackFactory<T> callbackFactory) throws IOException{
+                  CallbackFactory<T> callbackFactory) {
 
         this.decoderFactory = decoderFactory;
         this.callbackFactory = callbackFactory;
         this.callback = callbackFactory.getCallback();
 
-        InetAddress hostIP = InetAddress.getByName(IP);
+        try {
+            InetAddress hostIP = InetAddress.getByName(IP);
 
-        selector = Selector.open();
-        mySocket = ServerSocketChannel.open();
-        InetSocketAddress address = new InetSocketAddress(hostIP, port);
-        mySocket.socket().bind(address);
+            selector = Selector.open();
+            mySocket = ServerSocketChannel.open();
+            InetSocketAddress address = new InetSocketAddress(hostIP, port);
+            mySocket.socket().bind(address);
 
-        mySocket.configureBlocking(false);
-        mySocket.register(selector, SelectionKey.OP_ACCEPT);
+            mySocket.configureBlocking(false);
+            mySocket.register(selector, SelectionKey.OP_ACCEPT);
+        }
+        catch (IOException e) {
+            callback.onException(e);
+        }
     }
 
     @Override
     public void start() {
+        if (running.get()) {
+            callback.onException(new Exception("Server has already started"));
+        }
+
         serverMessageHandler =
-                new ServerMessageHandler<>(decoderFactory.getDecoder(), callbackFactory.getCallback());
+                new ServerMessageHandler<>(decoderFactory.getDecoder(), callback);
         serverMessageHandler.start();
 
         log.log(Level.INFO, "server started");
 
-        new Thread(() -> {
+        thread = new Thread(() -> {
             try {
                 running.set(true);
                 while (running.get()) {
 
                     selector.select();
+                    if (!running.get())
+                        break;
                     Set<SelectionKey> selectedKeys = selector.selectedKeys();
                     Iterator<SelectionKey> i = selectedKeys.iterator();
 
@@ -78,19 +90,33 @@ public class Server<T> implements IServer<T> {
                     }
                 }
             }
-            catch (IOException e) {
+            catch (Exception e) {
                 callback.onException(e);
             }
-        }).start();
+        });
+        thread.start();
     }
 
     @Override
-    public void close() throws IOException{
-        running.set(false);
-        log.log(Level.INFO, "server is closing...");
-        serverMessageHandler.close();
-        mySocket.socket().close();
-        mySocket.close();
+    public void close() {
+        try {
+            log.log(Level.INFO, "server is closing...");
+            running.set(false);
+            selector.wakeup();
+
+            try {
+                thread.join();
+            } catch (InterruptedException e) {
+                callback.onException(e);
+            }
+
+            serverMessageHandler.close();
+            mySocket.socket().close();
+            mySocket.close();
+        } catch (IOException e) {
+            callback.onException(e);
+        }
+
     }
 
     private void processAcceptEvent(ServerSocketChannel mySocket, SelectionKey key)
@@ -117,4 +143,5 @@ public class Server<T> implements IServer<T> {
     public void setDecoderFactory(DecoderFactory<T> decoderFactory) {
         this.decoderFactory = decoderFactory;
     }
+
 }

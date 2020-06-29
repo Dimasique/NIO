@@ -5,10 +5,12 @@ import org.studing.nio.interfaces.CallbackClient;
 import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 public class MyCallbackClient<T> implements CallbackClient<T> {
 
     private final BlockingQueue<T> queue = new ArrayBlockingQueue<T>(3);
+    private final AtomicBoolean wasException = new AtomicBoolean(false);
 
     @Override
     public void onMessageReceive(T message) {
@@ -21,8 +23,7 @@ public class MyCallbackClient<T> implements CallbackClient<T> {
 
     @Override
     public void onException(Exception e) {
-
-
+        wasException.set(true);
     }
 
     @Override
@@ -38,5 +39,9 @@ public class MyCallbackClient<T> implements CallbackClient<T> {
         }
 
         return null;
+    }
+
+    public boolean getWasException() {
+        return wasException.get();
     }
 }
