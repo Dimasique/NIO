@@ -193,9 +193,4 @@ public class AppTest {
             assertFalse(callbackClient.getWasException());
         }
     }
-
-    @Test
-    public void tmp() throws InterruptedException {
-        Thread.sleep(10000);
-    }
 }

@@ -74,8 +74,9 @@ public class Server<T> implements IServer<T> {
                 while (running.get()) {
 
                     selector.select();
-                    if (!running.get())
+                    if (!running.get()) {
                         break;
+                    }
                     Set<SelectionKey> selectedKeys = selector.selectedKeys();
                     Iterator<SelectionKey> i = selectedKeys.iterator();
 
